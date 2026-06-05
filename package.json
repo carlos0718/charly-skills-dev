@@ -1,42 +1,51 @@
 {
-  "name": "claude-skills-installer",
-  "version": "1.0.0",
-  "description": "Instalador interactivo para las skills /new-project y /learning-roadmap de Claude Code",
-  "type": "module",
-  "main": "bin/install.js",
-  "bin": {
-    "claude-skills-install": "./bin/install.js",
-    "claude-skills-uninstall": "./bin/uninstall.js"
-  },
-  "scripts": {
-    "start": "node bin/install.js",
-    "install:skills": "node bin/install.js",
-    "install:dev": "node bin/install.js --symlink",
-    "uninstall:skills": "node bin/uninstall.js",
-    "build:exe:win": "pkg . --targets node18-win-x64 --output dist/claude-skills-install.exe",
-    "build:exe:mac": "pkg . --targets node18-macos-x64 --output dist/claude-skills-install-mac",
-    "build:exe:linux": "pkg . --targets node18-linux-x64 --output dist/claude-skills-install-linux",
-    "build:exe:all": "pkg . --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --out-path dist/"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "pkg": {
-    "assets": [
-      "skills/**/*"
-    ],
-    "scripts": [
-      "bin/install.js",
-      "bin/uninstall.js"
-    ]
-  },
-  "keywords": [
-    "claude",
-    "claude-code",
-    "skills",
-    "installer",
-    "cli"
-  ],
-  "author": "Carlos",
-  "license": "MIT"
+	"name": "charly-skills-dev",
+	"version": "2.0.0",
+	"description": "Pack de skills personalizadas para Claude Code: /new-project (scaffolding de proyectos con stack, arquitectura, Git workflow, system prompt reusable) y /learning-roadmap (mentor virtual para aprender tech). Multi-AI ready.",
+	"type": "module",
+	"main": "bin/install.js",
+	"bin": {
+		"charly-skills": "./bin/install.js",
+		"charly-skills-uninstall": "./bin/uninstall.js"
+	},
+	"scripts": {
+		"start": "node bin/install.js",
+		"install:skills": "node bin/install.js",
+		"install:dev": "node bin/install.js --symlink",
+		"uninstall:skills": "node bin/uninstall.js",
+		"build:exe:win": "pkg . --targets node18-win-x64 --output dist/charly-skills.exe",
+		"build:exe:mac": "pkg . --targets node18-macos-x64 --output dist/charly-skills-mac",
+		"build:exe:linux": "pkg . --targets node18-linux-x64 --output dist/charly-skills-linux",
+		"build:exe:all": "pkg . --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --out-path dist/"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"pkg": {
+		"assets": [
+			"skills/**/*"
+		],
+		"scripts": [
+			"bin/install.js",
+			"bin/uninstall.js"
+		]
+	},
+	"keywords": [
+		"claude",
+		"claude-code",
+		"gemini",
+		"codex",
+		"skills",
+		"agent",
+		"installer",
+		"cli",
+		"scaffolding",
+		"ai-tools"
+	],
+	"author": "Carlos Jesus",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/carlos0718/charly-skills-dev.git"
+	}
 }

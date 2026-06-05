@@ -1,312 +1,217 @@
-# Claude Skills Installer
+# charly-skills-dev
 
-Instalador Node autocontenido para las skills `/new-project` y `/learning-roadmap` de Claude Code.
+> Pack de **skills personalizadas para Claude Code** que arman proyectos desde cero y guías de aprendizaje, todo basado en tu perfil técnico real.
 
-Trae los 21 archivos del pack adentro, te pregunta dónde guardarlos, y los copia + inicializa `profile.md` y `activity-log.jsonl` si no existen.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E=18-brightgreen)]()
+[![Skills](https://img.shields.io/badge/skills-2-blue)]()
 
-## Estructura del proyecto
+## Qué hace
 
-```
-claude-skills-installer/
-├── package.json              ← config Node + scripts npm
-├── README.md                 ← este archivo
-├── install.bat               ← doble-click en Windows
-├── install.command           ← doble-click en macOS
-├── .gitignore
-├── bin/
-│   └── install.js            ← el CLI interactivo
-└── skills/                   ← los 21 archivos del pack (origen)
-    ├── new-project/
-    ├── learning-roadmap/
-    └── shared/
-```
+Trae dos slash-commands para Claude Code:
 
-## Requisitos
+- **`/new-project`** — Scaffolding completo de proyectos (código, creativo o híbrido). Detecta tu workspace, sugiere stack según tus proyectos previos, aplica principios de código, gitflow con commits atómicos, genera SYSTEM_PROMPT.md reusable.
+- **`/learning-roadmap`** — Mentor virtual que arma roadmaps personalizados para aprender una tech (frontend, backend, AI, motion design, lo que sea), con entrevista de 4 preguntas y ejercicios por fase.
 
-- **Node.js 18+** (LTS recomendado). Verificá con `node --version`.
-- No requiere `npm install` — el installer no tiene dependencias externas, usa solo módulos built-in.
+Todo persistente: tu perfil va creciendo a medida que arrancás proyectos, y la skill aprende de cada uno.
 
-## Cómo correrlo
+## Instalación (una sola línea)
 
-### Opción 1 — Doble-click (más fácil)
-
-- **Windows**: doble-click en `install.bat`. Si no tenés Node instalado, te lo va a decir y te pasa el link.
-- **macOS / Linux**: doble-click en `install.command` (en macOS la primera vez puede pedirte permitirlo en *System Settings → Privacy & Security*).
-
-### Opción 2 — Terminal
+### Linux / macOS
 
 ```bash
-cd claude-skills-installer
-node bin/install.js
+curl -fsSL https://raw.githubusercontent.com/carlos0718/charly-skills-dev/main/install.sh | bash
 ```
 
-O con npm:
+### Windows (PowerShell)
 
-```bash
-npm start
+```powershell
+iwr -useb https://raw.githubusercontent.com/carlos0718/charly-skills-dev/main/install.ps1 | iex
 ```
 
-### Opción 3 — Instalar global (npm link)
+Eso es todo. Los scripts:
 
-Si querés tener el comando disponible desde cualquier carpeta:
+1. Verifican que tengas `git` y `node 18+` instalados.
+2. Clonan el repo a `~/.charly-skills-dev` (o lo actualizan si ya existe).
+3. Corren el installer interactivo que te pregunta dónde guardar las skills (default: `~/.claude/skills/`).
+4. Inicializan tu `profile.md` y `activity-log.jsonl` si no existen.
 
-```bash
-cd claude-skills-installer
-npm link
-# Después podés correr desde cualquier lado:
-claude-skills-install
-```
+Después, abrí Claude Code y tirá `/new-project` o `/learning-roadmap`.
 
-## El flujo interactivo
+### Modo developer (para contribuir o iterar las skills)
 
-Al correr, el installer te muestra algo así:
-
-```
-════════════════════════════════════════════════
-  Claude Skills Pack — Installer v1.0
-════════════════════════════════════════════════
-
-Vamos a instalar 2 skills personalizadas para Claude Code:
-  • /new-project       — armar proyectos de código / creativo / híbrido
-  • /learning-roadmap  — armar roadmaps de aprendizaje guiados
-
-  Origen: /path/al/proyecto/skills (21 archivos a instalar)
-
-¿Dónde querés instalar las skills?
-  1) /Users/charly/.claude/skills  (default de Claude Code — recomendado)
-  2) Otro path  (lo escribís en el próximo paso)
-  >
-```
-
-Después:
-
-1. Confirmás (o cancelás) el destino.
-2. `[1/4]` Crea las carpetas si no existen.
-3. `[2/4]` Copia las skills. Si alguna ya existía, te pregunta si querés sobrescribirla.
-4. `[3/4]` Crea `profile.md` desde el template — **solo si no existe** (regla de seguridad: el perfil nunca se sobrescribe automáticamente para no perder tus ediciones).
-5. `[4/4]` Crea `activity-log.jsonl` vacío si no existe.
-6. Muestra un resumen con los paths y los dos comandos de prueba.
-
-## Compilar a un .exe puro (opcional)
-
-Si querés un `.exe` standalone que no necesite Node instalado:
-
-```bash
-# Una sola vez, instalar pkg
-npm install --save-dev @yao-pkg/pkg
-
-# Compilar para Windows
-npx pkg . --targets node18-win-x64 --output dist/claude-skills-install.exe
-
-# O para los 3 sistemas operativos
-npm run build:exe:all
-```
-
-Esto produce un binario de ~40 MB que incluye Node + el código + los 21 archivos de skills. Lo podés mandar por mail/USB y el receptor solo lo ejecuta.
-
-**Nota**: `pkg` original (`vercel/pkg`) está deprecated. Usar el fork mantenido `@yao-pkg/pkg`.
-
-## Arrow-menus en chat (opt-in)
-
-Por default, los menús de la skill se renderizan como texto numerado en el chat: vos respondés tipeando `1`, `2` o el nombre de la opción. Si preferís un menú interactivo con flechas (como el del `install.bat`), podés activar el modo interactivo.
-
-### Cómo activar
-
-1. Editá `~/.claude/profile.md` y cambiá esta línea:
-   ```
-   - **prefer_interactive_menus**: `true`
-   ```
-2. La próxima vez que la skill necesite mostrar un menú, en vez de texto va a invocar bash con:
-   ```bash
-   node ~/.claude/skills/_helpers/choose.js "pregunta" "opcion1" "opcion2" ...
-   ```
-3. Claude Code te va a pedir permiso la primera vez. Para no tener que aprobar cada vez, pre-aprobalo como bash command permitido (`node ~/.claude/skills/_helpers/choose.js *`).
-
-### Trade-offs
-
-| Pro | Contra |
-|---|---|
-| UX más linda con flechas reales | Cada pregunta de menú dispara un bash command extra |
-| Menos chance de typo en respuestas | Tenés que aprobar permisos bash en Claude Code |
-| Consistente con el installer | Si el helper falla, cae a modo texto automáticamente |
-
-### Fallback automático
-
-Si el helper falla por cualquier razón (no es TTY, sin permisos, etc.) la skill **cae al modo texto sin molestarte**. No vas a quedar bloqueado.
-
-### Desactivar
-
-Cambiar de vuelta `prefer_interactive_menus: false` en el perfil.
-
-## Desinstalar
-
-Si querés sacar las skills (porque vas a reinstalar limpio, o ya no las usás):
+Si vas a editar las skills, usá symlinks así los cambios se reflejan al instante en Claude Code sin reinstalar:
 
 ```bash
 # Linux/macOS
-./uninstall.command
+curl -fsSL https://raw.githubusercontent.com/carlos0718/charly-skills-dev/main/install.sh | bash -s -- --symlink
 
 # Windows
-.\uninstall.bat
-
-# O directamente con Node
-node bin/uninstall.js
+$env:CHARLY_SKILLS_SYMLINK="1"; iwr -useb https://raw.githubusercontent.com/carlos0718/charly-skills-dev/main/install.ps1 | iex
 ```
 
-El uninstaller:
-- Detecta si las skills están instaladas como copia o como symlink, y las saca apropiadamente.
-- **Preserva tu `profile.md` y `activity-log.jsonl` por default** (tienen datos tuyos). Te pregunta antes de borrar cada uno.
-- Si la carpeta `skills/` quedó vacía, ofrece borrarla.
-
-Para borrar **TODO** sin preguntar (incluyendo perfil y log):
-
-```bash
-node bin/uninstall.js --purge
-```
-
-## Modo desarrollo: `--symlink`
-
-Si vas a iterar las skills (editarlas, mejorar prompts, agregar referencias), usar el flag `--symlink` ahorra reinstalar después de cada cambio. En vez de copiar los archivos, el installer crea **enlaces simbólicos** desde `~/.claude/skills/<skill>` hacia tu carpeta de desarrollo.
-
-```bash
-# Linux/macOS
-./install.sh --symlink
-# o
-node bin/install.js --symlink
-
-# Windows (PowerShell o cmd)
-.\install.bat --symlink
-# o
-node bin\install.js --symlink
-```
-
-Después de eso, cualquier cambio que hagas en `claude-skills-installer/skills/...` se ve **al instante** en Claude Code sin reinstalar.
-
-**Notas Windows**: el installer usa **junctions** (no symlinks tradicionales), así que NO necesitás Developer Mode ni admin. Funciona out of the box.
-
-**Notas Linux/macOS**: usa symlinks normales. Sin requisitos extra.
-
-**Cuándo NO usar `--symlink`**:
-- Cuando movés la carpeta del pack a otro lado o la borrás → los links quedan rotos.
-- Cuando querés que la versión instalada sea inmutable (snapshot estable).
-
-Para volver al modo copia: borrá manualmente los symlinks (`rm ~/.claude/skills/new-project ~/.claude/skills/learning-roadmap`) y corré el installer sin `--symlink`.
-
-## Para mejor experiencia: scaneo de GitHub
-
-Las skills `/new-project` y `/learning-roadmap` se vuelven mucho más útiles cuando pueden ver tu historial de proyectos (tanto local como en GitHub) para personalizar las sugerencias. El installer ya lo deja todo listo para el scan local, pero si querés que también lea tus repos de GitHub (incluyendo privados), elegí **una** de estas tres opciones:
-
-### Opción 1 — `gh` CLI (recomendada)
-
-La más liviana y segura. La skill detecta `gh` automáticamente y lo usa sin pedirte nada.
-
-```bash
-# Windows (con winget)
-winget install --id GitHub.cli
-
-# macOS
-brew install gh
-
-# Linux
-sudo apt install gh   # Ubuntu/Debian
-
-# Después, una vez:
-gh auth login
-```
-
-Cobertura: repos públicos + privados. Sin tokens manuales.
-
-### Opción 2 — Plugin de GitHub en Claude Code
-
-Si ya tenés Claude Code con el plugin de GitHub instalado y autenticado (vía OAuth en tu navegador), la skill lo detecta y lo usa directo. Sin setup extra.
-
-### Opción 3 — Personal Access Token
-
-Más manual. Generá un token en https://github.com/settings/tokens (con scope `repo`), guardalo en una variable de entorno:
-
-```bash
-# Linux/macOS (en ~/.bashrc o ~/.zshrc)
-export GITHUB_TOKEN=ghp_tu_token_aca
-
-# Windows (PowerShell, una vez)
-[System.Environment]::SetEnvironmentVariable('GITHUB_TOKEN','ghp_tu_token_aca','User')
-```
-
-### Sin ninguna de las tres
-
-La skill igual funciona — usa la API pública de GitHub (solo repos públicos, 60 calls/hora) o cae a entrevista manual de 8 preguntas. Vas a perder visibilidad de repos privados pero el perfil queda armado.
-
-## Tip: dónde abrir Claude Code la primera vez
-
-La primera vez que corras `/new-project` después de instalar, la skill ejecuta el **Paso 0** para detectar tu workspace. Para que el scan local funcione, conviene **abrir Claude Code dentro de tu carpeta de proyectos** (`D:\dev\`, `~/code/`, etc.), no en el home pelado.
-
-Si lo abrís en otro lado, no pasa nada: la skill te pregunta dónde está tu workspace y vos le indicás el path.
-
-## Probar sin tocar tu ~/.claude/
-
-Si querés ver cómo se comporta el installer sin alterar tu setup real:
-
-```bash
-# Elegí "Otro path" en el primer prompt y poné:
-/tmp/test-claude
-```
-
-Después borrás `/tmp/test-claude/` cuando termines.
-
-## Estructura que queda instalada
-
-Después de correr el installer con el path default, tenés:
+## Estructura
 
 ```
-~/.claude/
-├── profile.md                ← creado desde template (si no existía)
-├── activity-log.jsonl        ← creado vacío (si no existía)
+charly-skills-dev/
+├── package.json
+├── LICENSE                       ← MIT
+├── README.md
+├── install.sh                    ← script de install remoto Linux/macOS
+├── install.ps1                   ← script de install remoto Windows
+├── install.bat                   ← installer local Windows (doble-click)
+├── install.command               ← installer local macOS (doble-click)
+├── uninstall.bat / .command
+├── bin/
+│   ├── install.js                ← CLI installer principal
+│   └── uninstall.js
 └── skills/
-    ├── new-project/
+    ├── new-project/              ← skill principal
     │   ├── SKILL.md
     │   └── references/
     │       ├── stacks-code.md
     │       ├── stacks-creative.md
     │       ├── stacks-web-animation.md
     │       ├── architectures.md
-    │       └── templates/  (6 templates)
-    └── learning-roadmap/
-        ├── SKILL.md
-        └── references/
-            ├── mentor-questions.md
-            ├── official-docs.md
-            ├── learning-resources.md
-            └── templates/  (4 templates)
+    │       ├── coding-principles.md
+    │       ├── gitflow.md
+    │       ├── official-docs.md
+    │       ├── scan-strategies.md
+    │       ├── project-patterns/
+    │       └── templates/
+    ├── learning-roadmap/         ← skill mentor
+    │   └── (estructura similar)
+    ├── shared/
+    │   ├── profile.md.template
+    │   └── activity-log.jsonl.example
+    └── _helpers/
+        └── choose.js             ← arrow-menu helper (opcional)
 ```
 
-## Cosas que NO hace el installer (por diseño)
+## Requisitos
 
-- **No sobrescribe `profile.md`** aunque uses confirmación de sobrescritura — eso siempre es manual, para no perder tu perfil.
-- **No sobrescribe `activity-log.jsonl`** — es append-only, perderlo es perder historial.
-- **No ejecuta `npm install`** en tu sistema — el installer es zero-dependency a propósito.
-- **No conecta a internet** — todo viene adentro del proyecto.
+| Tool    | Versión    | Cómo instalar                                                                                                               |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Node.js | 18+        | https://nodejs.org/ o `winget install OpenJS.NodeJS.LTS` (Windows), `brew install node` (macOS), tu package manager (Linux) |
+| Git     | cualquiera | https://git-scm.com/ o `winget install Git.Git` / `brew install git` / `sudo apt install git`                               |
 
-## Troubleshooting
+No requiere `npm install` — el installer es **zero-dep**, solo usa módulos built-in de Node.
 
-**"node: command not found"**
-→ Node no está instalado. Descargalo de https://nodejs.org/ (LTS).
+## Para usuarios de Claude Code: pre-aprobar bash command (opcional)
 
-**"cannot read property of undefined"**
-→ Versión de Node muy vieja. Necesitás 18+.
+Si vas a usar el modo `prefer_interactive_menus: true` en tu perfil (flechas en algunos menús), Claude Code te va a pedir permiso para correr el helper. Para no tener que aprobarlo cada vez, agregalo a tus permitidos:
 
-**"Permission denied" al ejecutar `install.command`**
-→ En macOS/Linux dale permisos: `chmod +x install.command`.
+```
+node ~/.claude/skills/_helpers/choose.js *
+```
 
-**"This script cannot be loaded because running scripts is disabled" (PowerShell)**
-→ El installer Node no usa PowerShell, pero si querés correr `.ps1` antiguos: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
+## Para mejor experiencia: configurar GitHub
 
-## Próximos pasos sugeridos
+Las skills pueden scanear tu historial de proyectos de GitHub para personalizar las sugerencias. Tres opciones, cualquiera basta:
 
-- [ ] Probar el installer end-to-end en tu setup real.
-- [ ] Después de instalar, abrir Claude Code en un proyecto y tirar `/new-project`.
-- [ ] Volver con fricciones encontradas para iterar las skills.
-- [ ] Si querés distribuirlo a otros, compilá un `.exe` con `pkg`.
+### Opción 1 — `gh` CLI (recomendada)
+
+```bash
+# Instalación
+winget install --id GitHub.cli   # Windows
+brew install gh                  # macOS
+sudo apt install gh              # Linux
+
+# Auth (una vez)
+gh auth login
+```
+
+Cobertura: repos públicos + privados.
+
+### Opción 2 — Plugin de GitHub en Claude Code
+
+Si ya tenés el plugin de GitHub instalado y autenticado en Claude Code, la skill lo detecta y lo usa.
+
+### Opción 3 — Sin nada
+
+La skill cae a la API pública (solo repos públicos, 60 calls/hora) o a entrevista manual de 8 preguntas.
+
+## Comandos disponibles después de instalar
+
+Después del install, vas a tener disponible:
+
+```bash
+# Las skills en Claude Code:
+/new-project quiero armar una landing con animación 3D
+/learning-roadmap quiero aprender Three.js
+
+# En tu terminal (desde la carpeta clonada):
+node bin/install.js          # re-correr el installer
+node bin/uninstall.js        # desinstalar las skills
+node bin/install.js --help   # ayuda
+node bin/install.js --symlink   # modo dev
+```
+
+## Update a la última versión
+
+```bash
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/carlos0718/charly-skills-dev/main/install.sh | bash
+
+# Windows
+iwr -useb https://raw.githubusercontent.com/carlos0718/charly-skills-dev/main/install.ps1 | iex
+```
+
+El installer detecta que ya está clonado, hace `git pull` y vuelve a instalar las skills con los cambios.
+
+## Desinstalar
+
+```bash
+# Desde la carpeta del proyecto
+node bin/uninstall.js
+```
+
+El uninstaller:
+
+- Saca las skills de `~/.claude/skills/` (sea copia o symlink).
+- **Preserva** tu `profile.md` y `activity-log.jsonl` por default (tienen datos tuyos).
+- Te pregunta antes de borrar cada uno.
+
+Para borrar **todo** incluyendo perfil y log:
+
+```bash
+node bin/uninstall.js --purge
+```
+
+## Multi-AI (próximamente)
+
+El pack está siendo arquitectado para soportar múltiples asistentes de AI:
+
+- ✅ **Claude Code** (`~/.claude/skills/`)
+- 🚧 Cursor (`.cursor/rules/`)
+- 🚧 Gemini CLI
+- 🚧 Codex / OpenAI Codex CLI
+
+El comando `charly-skills install --target <ai>` traduce las skills al formato de cada AI.
+
+## Roadmap
+
+- [x] v1.0 — Installer básico Windows
+- [x] v1.5 — Symlink dev mode, uninstall, arrow menus en install
+- [x] v2.0 — Gitflow, TECH-DECISIONS, SYSTEM_PROMPT auto-trigger, session warmup
+- [ ] v2.1 — Welcome screen con ASCII art branded
+- [ ] v2.2 — CLI con subcomandos (`install`, `uninstall`, `update`, `status`, `doctor`)
+- [ ] v3.0 — Multi-AI support (Cursor primero)
+
+## Contribuir
+
+PRs bienvenidos. Para iterar:
+
+```bash
+git clone https://github.com/carlos0718/charly-skills-dev
+cd charly-skills-dev
+node bin/install.js --symlink   # instala en modo dev — cambios al instante
+```
+
+Después editás los archivos del pack y los probás en tu Claude Code sin reinstalar.
 
 ## Licencia
 
-MIT.
+[MIT](LICENSE) © 2026 Carlos Jesus
+
+Hecho con cariño desde Argentina 🧉
