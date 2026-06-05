@@ -1,0 +1,173 @@
+# Perfil de {{USER_NAME}}
+
+> Archivo global del usuario. Vive en `~/.claude/profile.md`.
+> Lo leen las skills `/new-project` y `/learning-roadmap` al inicio.
+> Editable a mano en cualquier momento.
+
+## Configuración
+
+> Esta sección la pobla automáticamente el **Paso 0** de `/new-project` en la primera ejecución.
+> Si ya está completa, las próximas ejecuciones saltan directo a P1 sin volver a preguntar.
+
+- **workspace_root**: `{{WORKSPACE_ROOT}}`  <!-- ej. /home/charly/code/ o D:\dev\ -->
+- **github_username**: `{{GITHUB_USERNAME}}`  <!-- opcional, para scan de GitHub -->
+- **scan_method**: `{{SCAN_METHOD}}`  <!-- local | github-mcp | gh-cli | github-api | manual -->
+- **last_scan_date**: `{{LAST_SCAN_DATE}}`
+- **preferred_editor**: `{{PREFERRED_EDITOR}}`  <!-- vscode, cursor, neovim, etc. -->
+- **preferred_terminal**: `{{PREFERRED_TERMINAL}}`  <!-- powershell, bash, zsh, wezterm, etc. -->
+- **default_install_mode**: `{{INSTALL_MODE}}`  <!-- auto | step | manual | preguntar (default si vacío: preguntar) -->
+- **default_todo_mode**: `{{TODO_MODE}}`  <!-- A=manual | B=colaborativo | C=auto | D=skip | preguntar -->
+- **prefer_interactive_menus**: `false`  <!-- true = menús con flechas vía bash helper. false = menús de texto numerado en chat. Activar requiere aprobar 'node ~/.claude/skills/_helpers/choose.js' como bash command en Claude Code. -->
+
+## Principios de código
+
+> Estos principios se aplican a TODOS los proyectos de código que generes con `/new-project`.
+> Definiciones completas y cuándo aplicar cada uno: `~/.claude/skills/new-project/references/coding-principles.md`.
+> Marcá/desmarcá los checkboxes para activar/desactivar.
+
+### Patrones de diseño
+- [x] SOLID (los 5 principios)
+- [x] Repository (separar persistencia de lógica de negocio)
+- [x] MVC / MVVM cuando el framework lo espera
+- [x] Factory cuando hay creación condicional de objetos
+- [ ] Strategy
+- [ ] Observer / Pub-Sub
+- [ ] Singleton (usar solo con justificación)
+
+### Principios generales
+- [x] DRY — no duplicar conocimiento (cuidado con falsos duplicados)
+- [x] KISS — la solución más simple que funciona
+- [x] YAGNI — no programar para necesidades futuras hipotéticas
+- [x] Clean Code (nombres descriptivos, funciones cortas, una función una cosa)
+
+### Reglas de estilo
+- [x] NO estilos inline en HTML/JSX salvo correcciones puntuales muy menores o valores dinámicos en runtime
+- [x] Early returns en vez de pirámides de `if`
+- [x] Magic numbers / strings → constantes nombradas
+- [x] Funciones < 30 líneas (guideline)
+- [x] Imports ordenados (externos → internos → relativos)
+- [x] Tipado explícito en TS (evitar `any`)
+- [x] Validación de input en el borde (middleware/decorador)
+- [x] Manejo de errores centralizado
+- [x] Logs estructurados (no `console.log` con strings)
+
+### Excepciones / overrides por proyecto
+
+Si algún proyecto puntual necesita romper alguna de estas reglas, documentarlo en el `CLAUDE.md` de ESE proyecto bajo "Principios aplicados a este proyecto".
+
+## Áreas de trabajo
+
+- [ ] Code & engineering
+- [ ] Video editing & motion design
+- [ ] AI-assisted creative work
+- [ ] 3D / web animation avanzada
+- [ ] Otro: {{OTHER_AREA}}
+
+## Stacks dominantes — Código
+
+> Estas secciones las pobla y actualiza la skill `/new-project` al cerrar cada proyecto (paso "Cierre").
+> Formato sugerido: `- <nombre>: <N> proyectos, último uso YYYY-MM-DD`.
+> El usuario puede editar a mano cuando quiera.
+
+### Frontend (frameworks / libs base)
+- {{TECH_1}}: {{COUNT_1}} proyectos, último uso {{LAST_USE_1}}
+- {{TECH_2}}: {{COUNT_2}} proyectos, último uso {{LAST_USE_2}}
+
+### Backend
+-
+
+### Lenguaje default (TS / JS / Python / Go / Rust / ...)
+-
+
+### Estilos
+- (ej. Tailwind, Sass, CSS Modules, styled-components, Emotion)
+
+### UI primitives / componentes pre-armados
+- (ej. shadcn/ui, Radix, Headless UI, MUI, Chakra, Mantine, Ant Design)
+
+### Animación / motion (uso liviano dentro de apps web)
+- (ej. Framer Motion, GSAP, Anime.js, Auto-Animate, Lottie)
+
+### State management
+- (ej. Zustand, Redux Toolkit, Jotai, Valtio, Context API, Pinia)
+
+### Data fetching / HTTP client
+- (ej. TanStack Query, SWR, axios, ky, fetch nativo, RTK Query)
+
+### Forms / validación
+- (ej. React Hook Form, Formik, Zod, Yup, TanStack Form, Valibot)
+
+### Auth
+- (ej. Better Auth, Auth.js / NextAuth, Clerk, Lucia, Supabase Auth)
+
+### ORM / DB clients
+- (ej. Prisma, Drizzle, Mongoose, TypeORM, Knex, SQLAlchemy)
+
+### Testing
+- (ej. Vitest, Jest, Playwright, Cypress, Testing Library)
+
+### Infra / Deploy
+- (ej. Vercel, Netlify, Fly.io, Railway, AWS, Cloudflare Pages)
+
+### Otros / utilidades
+- (date-fns, lodash, lucide-react, ramda, etc. — los que aparezcan seguido)
+
+## Stacks dominantes — Creativo
+
+### AI image gen
+- (ej. Midjourney, Flux, Krea)
+
+### AI video gen
+- (ej. Runway Gen-4, Kling, Pika)
+
+### Editor de video
+- (ej. CapCut, DaVinci Resolve, Premiere)
+
+### Motion design
+- (ej. After Effects, Cavalry)
+
+### 3D
+- (ej. Blender, Cinema 4D, Spline)
+
+### Audio
+- (ej. música licenciada, Suno, Splice)
+
+## Stacks dominantes — Web animation
+
+- (ej. Three.js, R3F, drei, GSAP, Lottie)
+
+## Tipos de proyecto frecuentes
+
+- (ej. Web app SaaS, video ad de producto, landing con 3D, portfolio inmersivo)
+
+## Convenciones de código
+
+- **Lenguaje default**: (TS / JS / Python / ...)
+- **Naming de carpetas**: (kebab-case / camelCase / PascalCase)
+- **Naming de archivos**: (kebab-case / PascalCase para componentes)
+- **Commits**: (conventional commits / libre)
+- **Branches**: (feature/* fix/* / libre)
+- **Arquitectura preferida proyectos medianos**: (feature-based / por tipo)
+- **Linter / formatter**: (ESLint + Prettier / Biome / ...)
+
+## Convenciones creativas
+
+- **Plataforma destino default**: (Reels / TikTok / Shorts)
+- **Aspect ratio default**: (9:16 / 1:1)
+- **Estructura de prompts**: bloques STYLE / BACKGROUND / FRAMING / OUTPUT
+- **Pipeline default video ads**: AI image → AI video → editor
+- **Fondos para compositing**: (negro sólido / verde)
+
+## Aprendizajes en curso
+
+| Tech | Nivel | Inicio | Horas/sem |
+|---|---|---|---|
+| {{TECH}} | {{LEVEL}} | {{DATE}} | {{HOURS}} |
+
+## Notas libres
+
+(espacio para apuntes que no entran en las categorías de arriba)
+
+## Última actualización
+
+{{LAST_UPDATE_DATE}}

@@ -1,0 +1,41 @@
+# Check-ins — Aprender {{TECH}}
+
+> Cadencia sugerida: cada {{CADENCE}} (semanal / quincenal).
+> Próximo check-in: {{NEXT_CHECKIN_DATE}}.
+
+## Plantilla de check-in
+
+```
+## Check-in #N — fecha
+
+### ¿Qué aprendí?
+-
+-
+
+### ¿Qué me costó?
+-
+
+### ¿Qué viene ahora?
+-
+
+### ¿Necesito ajustar el roadmap?
+- [ ] Sí — describir cambio
+- [ ] No
+```
+
+---
+
+## Check-in #1 — {{FIRST_CHECKIN_DATE}}
+
+### ¿Qué aprendí?
+- (completar al cerrar la sesión)
+
+### ¿Qué me costó?
+-
+
+### ¿Qué viene ahora?
+-
+
+### ¿Necesito ajustar el roadmap?
+- [ ] Sí
+- [ ] No

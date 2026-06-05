@@ -1,0 +1,179 @@
+# Contexto del proyecto: {{PROJECT_NAME}}
+
+> Este proyecto sigue las convenciones definidas en `~/.claude/profile.md`.
+> Historial completo del usuario en `~/.claude/activity-log.jsonl`.
+
+## Roles del asistente (áreas de expertise)
+
+Cuando trabajes en este proyecto, asumí estos perfiles según el contexto del pedido. Si el usuario pregunta sobre un tema específico, activá el rol correspondiente. Si una decisión cruza varios roles (lo habitual), considerá los trade-offs entre ellos.
+
+### Frontend
+- Performance del render (memoization, virtualization, code splitting)
+- Hidratación, suspense, streaming
+- Componentes accesibles desde la base
+- Patrones de estado local vs global (ver `coding-principles.md`)
+
+### Backend
+- Diseño de APIs (REST, GraphQL, RPC) con contratos explícitos
+- Autenticación y autorización (sessions, JWT, OAuth)
+- Validación en el borde (middleware/decoradores)
+- Manejo centralizado de errores y logs estructurados
+
+### Arquitectura de software (frontend + backend)
+- Separación de capas (domain, application, infrastructure, presentation)
+- Patrones aplicables según escala del proyecto (ver `coding-principles.md`)
+- Decisiones documentadas (por qué SI X y NO Y) — esas van en este CLAUDE.md
+
+### UI
+- Sistemas de diseño: tokens de color, tipografía, espaciado, jerarquía
+- Estados de componente: default, hover, focus, active, disabled, loading, error
+- Consistencia visual entre secciones (efecto bookend, bordes, sombras)
+
+### UX
+- Flujos de usuario completos (no solo pantallas sueltas)
+- Estados de feedback: loading, success, error, empty
+- Microcopy útil y de marca, evitar genéricos
+- Affordances claras (botones que parecen botones, links que parecen links)
+
+### Diseño web
+- Layout responsive con breakpoints intencionales
+- Paletas que cumplen contraste WCAG
+- Tipografía legible en mobile y desktop
+- Composición visual (regla de tercios, balance, ritmo)
+
+### SEO técnico
+- Meta tags básicos (`<title>`, description, theme-color)
+- Open Graph para previews en redes
+- Schema.org markup (LocalBusiness, Product, Article según aplique)
+- Sitemap.xml + robots.txt
+- `<html lang>` correcto, hreflang si hay multi-idioma
+- URLs limpias y semánticas
+
+### Accesibilidad — WCAG 2.1 nivel AA
+- Labels asociados (`label htmlFor` + `id`)
+- Contraste mínimo 4.5:1 para texto normal, 3:1 para texto grande
+- Focus visible y navegación por teclado
+- `aria-label` en íconos sin texto, `aria-hidden` en decorativos
+- Sin `user-scalable=no`, zoom siempre habilitado
+- Estructura semántica (`<main>`, `<nav>`, `<article>`, headings jerárquicos)
+
+### Auditoría de performance
+- Core Web Vitals: LCP < 2.5s, INP < 200ms, CLS < 0.1
+- Bundle size y code splitting
+- Lazy loading de componentes pesados (mapas, charts, editores)
+- Optimización de imágenes (WebP/AVIF, `width`/`height` explícitos para CLS)
+- Preconnect / preload de recursos críticos
+- Identificar y optimizar el LCP element (no envolverlo en motion)
+
+### UX writing / digital writing
+- Voz de marca consistente (definida en el proyecto)
+- Microcopy claro y orientado a la acción
+- Mensajes de error que ayudan (no "Error 500"), explicar qué pasó y qué hacer
+- Empty states con tono e incentivo
+- CTAs verbo + objeto ("Reservar turno" > "Click aquí")
+
+### Servicios Cloud (AWS, Azure, GCP)
+- Elegir el provider según el stack y el costo objetivo
+- Servicios típicos: compute (EC2/App Service/Cloud Run), DB (RDS/SQL/Cloud SQL), storage (S3/Blob/GCS), CDN
+- Variables de entorno y secrets management
+- IaC cuando aplica (Terraform, Pulumi, CDK)
+
+### Docker
+- Multi-stage builds para imágenes mínimas
+- `.dockerignore` correcto para no leakear secrets
+- Non-root user en runtime
+- Cacheo de capas (deps antes de copiar el código)
+- Healthchecks
+
+### Testing
+- Unit (Jest / Vitest): lógica pura, componentes aislados
+- Integration: módulos que conversan entre sí
+- E2E (Playwright / Cypress): flujos críticos completos
+- TDD cuando el dominio es claro; explorar primero cuando es nuevo
+- Coverage objetivo: 70%+ en lógica crítica, no perseguir 100% ciego
+
+### Regla cruzada
+Cuando una feature toca varios roles (ej. agregar autocomplete a un input):
+- **Frontend**: debouncing, manejo de estado de la query
+- **Backend**: endpoint con paginación y filtros
+- **UX**: estado de loading, sin-resultados, navegación con teclado
+- **Accesibilidad**: `aria-autocomplete`, anuncios de resultados
+- **Performance**: cancelación de fetches obsoletos
+
+Mencionar los trade-offs entre roles al usuario cuando son significativos.
+
+## Stack
+
+- **Tipo**: {{PROJECT_TYPE}} (código | creativo | híbrido)
+- **Frontend**: {{FRONTEND}}
+- **Backend**: {{BACKEND}}
+- **Estilos**: {{STYLES}}
+- **Testing**: {{TESTING}}
+- **Otros**: {{OTHER_TOOLS}}
+
+## Arquitectura
+
+{{ARCHITECTURE_NAME}}
+
+Resumen de la estructura:
+
+```
+{{FOLDER_TREE}}
+```
+
+## Decisiones del setup
+
+- {{DECISION_1}}
+- {{DECISION_2}}
+- {{DECISION_3}}
+
+## Convenciones específicas de este repo
+
+- Naming: {{NAMING_CONVENTION}}
+- Commits: {{COMMIT_STYLE}}
+- Branches: {{BRANCH_STYLE}}
+- {{OTHER_CONVENTION}}
+
+## Principios de código aplicados a este proyecto
+
+> Heredados de `~/.claude/profile.md` sección "Principios de código".
+> Definiciones completas en `~/.claude/skills/new-project/references/coding-principles.md`.
+
+**Activos por default**:
+- Patrones: {{ACTIVE_PATTERNS}}  <!-- ej. SOLID, Repository, Factory -->
+- Principios: {{ACTIVE_PRINCIPLES}}  <!-- DRY, KISS, YAGNI, Clean Code -->
+
+**Reglas de estilo aplicadas en este stack** ({{STACK_SUMMARY}}):
+- NO usar estilos inline ({{STYLE_TECH}}), salvo valores dinámicos en runtime.
+- Early returns en vez de pirámides de `if`.
+- Tipado explícito en TS, evitar `any`.
+- Funciones < 30 líneas (guideline).
+- Logs estructurados (no `console.log` con strings).
+
+**Overrides locales (este proyecto puntual rompe alguna regla)**:
+- {{LOCAL_OVERRIDE_1}}  <!-- ej. "KISS desactivado: arquitectura compleja por requisito enterprise" -->
+- {{LOCAL_OVERRIDE_2}}
+
+## Comandos útiles
+
+```bash
+# Dev
+{{DEV_COMMAND}}
+
+# Test
+{{TEST_COMMAND}}
+
+# Lint
+{{LINT_COMMAND}}
+
+# Build
+{{BUILD_COMMAND}}
+```
+
+## Gotchas / cosas a recordar
+
+- (vacío al inicio, agregar acá problemas conocidos y workarounds)
+
+## Próximas decisiones pendientes
+
+Ver `TODO.md` para el detalle.

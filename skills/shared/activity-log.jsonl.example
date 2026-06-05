@@ -1,0 +1,4 @@
+{"date":"2026-04-12","skill":"new-project","name":"crm-mvp","type":"code","stack":{"front":"react-ts","back":"express","styles":"tailwind","test":"vitest"},"architecture":"feature-based","path":"~/code/crm-mvp"}
+{"date":"2026-04-20","skill":"learning-roadmap","name":"rust-basics","tech":"rust","level":"beginner","weekly_hours":5,"styles":["leer","hacer"],"path":"~/learning/rust-basics"}
+{"date":"2026-05-02","skill":"new-project","name":"beverage-launch-ad","type":"creative","stack":{"ai_image":"midjourney","ai_video":"runway-gen4","editor":"capcut"},"architecture":"video-ad","path":"~/creative/beverage-launch"}
+{"date":"2026-05-15","skill":"new-project","name":"portfolio-3d","type":"hybrid","stack":{"front":"react-ts","animation":"r3f+drei+gsap","styles":"tailwind"},"architecture":"web-inmersiva","path":"~/code/portfolio-3d"}

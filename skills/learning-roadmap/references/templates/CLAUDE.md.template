@@ -1,0 +1,41 @@
+# Contexto del aprendizaje: {{TECH}}
+
+> Generado por `/learning-roadmap` el {{DATE}}.
+> Perfil del usuario en `~/.claude/profile.md`.
+
+## Qué estoy aprendiendo
+
+**Tecnología**: {{TECH}}
+**Objetivo**: {{OBJECTIVE}}
+**Nivel inicial**: {{LEVEL}}
+**Tiempo declarado**: {{WEEKLY_HOURS}} hs/semana
+**Estilos preferidos**: {{STYLES}}
+
+## Estructura del aprendizaje
+
+- `ROADMAP.md` — plan de 3 fases con concept map.
+- `exercises/` — ejercicios numerados.
+- `resources.md` — docs, canales YT, términos de búsqueda.
+- `checkins.md` — registro de progreso.
+- `notes.md` — apuntes libres.
+
+## Fase actual
+
+{{CURRENT_PHASE}} (actualizar a medida que avanza).
+
+## Próximo paso concreto
+
+{{NEXT_STEP}}
+
+## Cómo usar Claude en este aprendizaje
+
+- "Explicame {{CONCEPT}} como si tuviera nivel {{LEVEL}}".
+- "Revisá el ejercicio que escribí en `exercises/0X-<nombre>.md`".
+- "Estoy trabado en X, decime por dónde seguir según el roadmap".
+- "Reajustá la Fase {{N}} porque me está sobrando/faltando tiempo".
+
+## Notas para el mentor virtual
+
+- No saltar la fase 1 si el nivel es bajo, aunque parezca aburrida.
+- Si el estilo incluye "Replicar", siempre dar un ejemplo concreto a reproducir.
+- Si el tiempo declarado es bajo (<5 hs/sem), evitar sugerir cursos de 40+ horas.

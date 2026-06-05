@@ -1,0 +1,46 @@
+# {{PROJECT_NAME}}
+
+{{PROJECT_DESCRIPTION}}
+
+## Stack
+
+{{STACK_SUMMARY}}
+
+## Setup
+
+```bash
+# Clonar
+git clone <repo-url>
+cd {{PROJECT_NAME}}
+
+# Instalar dependencias
+{{INSTALL_COMMAND}}
+
+# Variables de entorno
+cp .env.example .env
+# Editar .env con tus valores
+```
+
+## Scripts disponibles
+
+- `{{DEV_COMMAND}}` — levanta el entorno de desarrollo
+- `{{BUILD_COMMAND}}` — build de producción
+- `{{TEST_COMMAND}}` — corre los tests
+- `{{LINT_COMMAND}}` — chequea el linter
+
+## Estructura
+
+```
+{{FOLDER_TREE}}
+```
+
+## Contribuir
+
+1. Hacer fork
+2. Crear branch: `git checkout -b {{BRANCH_STYLE}}/<nombre>`
+3. Commits siguiendo: {{COMMIT_STYLE}}
+4. Abrir PR
+
+## Licencia
+
+{{LICENSE}}

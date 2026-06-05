@@ -1,0 +1,38 @@
+# TODO — {{PROJECT_NAME}}
+
+> Generado por `/new-project` el {{DATE}}.
+> Modo elegido: {{TODO_MODE}} (A manual | B colaborativo | C auto | D skip)
+
+## Setup
+
+- [ ] Verificar que el dev server arranca
+- [ ] Configurar variables de entorno (.env)
+- [ ] Inicializar repo git y primer commit
+- [ ] Conectar a GitHub / GitLab
+- [ ] Configurar CI básico
+
+## Features iniciales
+
+- [ ] {{FEATURE_1}}
+- [ ] {{FEATURE_2}}
+- [ ] {{FEATURE_3}}
+
+## Calidad
+
+- [ ] Configurar reglas de linter
+- [ ] Configurar Prettier / formatter
+- [ ] Escribir primer smoke test
+- [ ] Coverage objetivo definido
+
+## Documentación
+
+- [ ] Completar README.md
+- [ ] Documentar decisiones clave en CLAUDE.md
+- [ ] Agregar diagramas si aplica
+
+## Deploy
+
+- [ ] Elegir hosting / infra
+- [ ] Configurar variables de producción
+- [ ] Configurar dominio
+- [ ] Primer deploy

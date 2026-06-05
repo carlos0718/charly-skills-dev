@@ -1,0 +1,69 @@
+# Recursos — {{TECH}}
+
+> Curados por estilo de aprendizaje del usuario: {{STYLES}}
+> Sin URLs específicas de YouTube — googleá los términos sugeridos.
+
+## Documentación oficial
+
+- {{OFFICIAL_DOCS_URL}}
+
+## Canales de YouTube recomendados
+
+{{YT_CHANNELS}}
+
+## Libros / cursos
+
+{{BOOKS_AND_COURSES}}
+
+---
+
+## Por fase
+
+### Fase 1 · Fundamentos
+
+**Términos de búsqueda en YouTube:**
+- {{SEARCH_TERM_F1_1}}
+- {{SEARCH_TERM_F1_2}}
+- {{SEARCH_TERM_F1_3}}
+
+**Lectura sugerida:**
+- {{READ_F1_1}}
+- {{READ_F1_2}}
+
+**Repos para "Romper":**
+- {{REPO_F1_1}}
+
+### Fase 2 · Práctica
+
+**Términos de búsqueda:**
+- {{SEARCH_TERM_F2_1}}
+- {{SEARCH_TERM_F2_2}}
+
+**Lectura:**
+- {{READ_F2_1}}
+
+**Repos:**
+- {{REPO_F2_1}}
+
+### Fase 3 · Proyecto final
+
+**Términos de búsqueda:**
+- {{SEARCH_TERM_F3_1}}
+
+**Lectura:**
+- {{READ_F3_1}}
+
+**Repos / referencias:**
+- {{REPO_F3_1}}
+
+---
+
+## Comunidad
+
+- Discord / Slack oficial: {{COMMUNITY_LINK}}
+- Reddit: {{REDDIT_LINK}}
+- Twitter / X (cuentas a seguir): {{TWITTER_HANDLES}}
+
+## Notas
+
+(El usuario puede agregar recursos que encuentre y le sirvan)

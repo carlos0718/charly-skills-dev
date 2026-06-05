@@ -1,0 +1,34 @@
+# Dependencias (por si más adelante agregamos npm install)
+node_modules/
+
+# Build outputs (por si después compilamos con pkg)
+dist/
+build/
+
+# Estado de Cowork/sesiones (no aplica al repo)
+.skill-state.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Editor / IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test artifacts
+coverage/
+.nyc_output/
+
+# Local config del usuario (no compartir tokens)
+.env
+.env.local
+.env.*.local

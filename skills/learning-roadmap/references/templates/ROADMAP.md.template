@@ -1,0 +1,109 @@
+# Roadmap — Aprender {{TECH}}
+
+> Generado por `/learning-roadmap` el {{DATE}}.
+> Objetivo: {{OBJECTIVE}}
+> Nivel inicial: {{LEVEL}} · Horas/semana: {{WEEKLY_HOURS}} · Estilos: {{STYLES}}
+
+## Mapa conceptual
+
+```mermaid
+flowchart LR
+    F1[Fase 1<br/>Fundamentos]:::phase --> C1[Concepto A]
+    F1 --> C2[Concepto B]
+    F1 --> C3[Concepto C]
+    C1 --> F2[Fase 2<br/>Práctica guiada]:::phase
+    C2 --> F2
+    C3 --> F2
+    F2 --> P1[Proyecto<br/>chico A]
+    F2 --> P2[Proyecto<br/>chico B]
+    P1 --> F3[Fase 3<br/>Proyecto final]:::phase
+    P2 --> F3
+    F3 --> GOAL[{{OBJECTIVE_SHORT}}]:::goal
+
+    classDef phase fill:#e0e7ff,stroke:#6366f1,color:#1e1b4b
+    classDef goal fill:#fef3c7,stroke:#d97706,color:#451a03
+```
+
+---
+
+## Fase 1 · Fundamentos · ~{{PHASE_1_WEEKS}} semanas
+
+**Objetivo de la fase**: dominar los conceptos básicos sin los cuales nada del resto tiene sentido.
+
+**Criterio de éxito**: podés explicarle a alguien más cómo funciona {{KEY_CONCEPT}} sin mirar la documentación.
+
+### Conceptos clave
+
+- [ ] {{CONCEPT_1}}
+- [ ] {{CONCEPT_2}}
+- [ ] {{CONCEPT_3}}
+- [ ] {{CONCEPT_4}}
+
+### Ejercicios
+
+- [ ] `exercises/01-<nombre>.md` — primer ejercicio guiado
+- [ ] `exercises/02-<nombre>.md` — variación del anterior
+- [ ] `exercises/03-<nombre>.md` — combinar conceptos
+
+### Recursos sugeridos
+
+Ver `resources.md` sección "Fundamentos".
+
+---
+
+## Fase 2 · Práctica guiada · ~{{PHASE_2_WEEKS}} semanas
+
+**Objetivo de la fase**: convertir los conceptos en intuición construyendo cosas pequeñas reales.
+
+**Criterio de éxito**: podés arrancar un mini-proyecto sin tutorial, solo con la doc oficial al lado.
+
+### Mini-proyectos
+
+- [ ] {{MINI_PROJECT_1}} — {{DESCRIPTION}}
+- [ ] {{MINI_PROJECT_2}} — {{DESCRIPTION}}
+- [ ] {{MINI_PROJECT_3}} — {{DESCRIPTION}}
+
+### Topics intermedios
+
+- [ ] {{INTERMEDIATE_1}}
+- [ ] {{INTERMEDIATE_2}}
+- [ ] {{INTERMEDIATE_3}}
+
+### Recursos sugeridos
+
+Ver `resources.md` sección "Práctica".
+
+---
+
+## Fase 3 · Proyecto final · ~{{PHASE_3_WEEKS}} semanas
+
+**Objetivo de la fase**: {{OBJECTIVE}}
+
+**Criterio de éxito**: el proyecto está terminado, probado, y subido a un repo o publicado.
+
+### Hitos del proyecto
+
+- [ ] {{MILESTONE_1}}
+- [ ] {{MILESTONE_2}}
+- [ ] {{MILESTONE_3}}
+- [ ] {{MILESTONE_4}}
+- [ ] Publicación / deploy
+
+### Topics avanzados que aparecen
+
+- {{ADVANCED_1}}
+- {{ADVANCED_2}}
+- {{ADVANCED_3}}
+
+### Recursos sugeridos
+
+Ver `resources.md` sección "Proyecto final".
+
+---
+
+## Cómo usar este roadmap
+
+1. **Empezá por `exercises/01-<nombre>.md`** — ya está armado y dimensionado para tu primera sesión.
+2. **Andá tachando los checkboxes** a medida que avanzás.
+3. **Cada N semanas** (ver `checkins.md`), volvé acá y reajustá si algo no funciona.
+4. **Si te trabás**, abrí Claude y decile *"estoy trabado en {{TECH}} en X, según mi roadmap"* — va a recordar el contexto desde `CLAUDE.md`.
