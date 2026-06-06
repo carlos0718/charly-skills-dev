@@ -90,10 +90,10 @@ charly-skills-dev/
 
 ## Requisitos
 
-| Tool    | Versión    | Cómo instalar                                                                                                               |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Node.js | 18+        | https://nodejs.org/ o `winget install OpenJS.NodeJS.LTS` (Windows), `brew install node` (macOS), tu package manager (Linux) |
-| Git     | cualquiera | https://git-scm.com/ o `winget install Git.Git` / `brew install git` / `sudo apt install git`                               |
+| Tool | Versión | Cómo instalar |
+|---|---|---|
+| Node.js | 18+ | https://nodejs.org/ o `winget install OpenJS.NodeJS.LTS` (Windows), `brew install node` (macOS), tu package manager (Linux) |
+| Git | cualquiera | https://git-scm.com/ o `winget install Git.Git` / `brew install git` / `sudo apt install git` |
 
 No requiere `npm install` — el installer es **zero-dep**, solo usa módulos built-in de Node.
 
@@ -133,41 +133,80 @@ La skill cae a la API pública (solo repos públicos, 60 calls/hora) o a entrevi
 
 ## Comandos disponibles después de instalar
 
-Después del install, vas a tener disponible:
+Después del install, en tu **Claude Code**:
 
-```bash
-# Las skills en Claude Code:
+```
 /new-project quiero armar una landing con animación 3D
 /learning-roadmap quiero aprender Three.js
+```
 
-# En tu terminal (desde la carpeta clonada):
-node bin/install.js          # re-correr el installer
-node bin/uninstall.js        # desinstalar las skills
-node bin/install.js --help   # ayuda
-node bin/install.js --symlink   # modo dev
+Y en tu **terminal** (desde la carpeta clonada, o globalmente si hiciste `npm link`):
+
+```bash
+charly-skills install              # instala las skills
+charly-skills install --symlink    # modo dev (cambios al instante)
+charly-skills uninstall            # desinstala
+charly-skills uninstall --purge    # borra TODO incluyendo profile y log
+charly-skills update               # git pull + reinstall
+charly-skills status               # info de tu instalación actual
+charly-skills doctor               # diagnóstico (Node, git, gh, Claude Code)
+charly-skills version              # versión del pack
+charly-skills help [comando]       # ayuda
+```
+
+Ejemplo de `charly-skills status`:
+
+```
+charly-skills status
+─────────────────────────────────────
+
+Pack
+  Nombre:   charly-skills-dev
+  Versión:  2.0.0
+  Root:     ~/.charly-skills-dev
+
+Git
+  Branch:   main
+  Commit:   a3f4d12
+  Remote:   https://github.com/carlos0718/charly-skills-dev.git
+
+Instalación
+  Claude dir:    ~/.claude  ✓
+  Skills dir:    ~/.claude/skills  ✓
+  ✓ new-project (symlink)
+  ✓ learning-roadmap (symlink)
+  ✓ _helpers (symlink)
+
+Datos del usuario
+  ✓ profile.md   (6556 bytes)
+  ✓ activity-log.jsonl   (12 proyectos registrados)
+    Último: new-project → "twitter-clone" (2026-06-05)
 ```
 
 ## Update a la última versión
 
+Si ya tenés el pack instalado, hay dos formas:
+
 ```bash
+# Forma 1: comando directo del CLI
+charly-skills update
+
+# Forma 2: re-ejecutar el remote installer (mismo resultado)
 # Linux / macOS
 curl -fsSL https://raw.githubusercontent.com/carlos0718/charly-skills-dev/main/install.sh | bash
-
 # Windows
 iwr -useb https://raw.githubusercontent.com/carlos0718/charly-skills-dev/main/install.ps1 | iex
 ```
 
-El installer detecta que ya está clonado, hace `git pull` y vuelve a instalar las skills con los cambios.
+Ambos detectan que ya está clonado, hacen `git pull` y vuelven a instalar las skills con los cambios.
 
 ## Desinstalar
 
 ```bash
-# Desde la carpeta del proyecto
-node bin/uninstall.js
+charly-skills uninstall
 ```
 
 El uninstaller:
-
 - Saca las skills de `~/.claude/skills/` (sea copia o symlink).
 - **Preserva** tu `profile.md` y `activity-log.jsonl` por default (tienen datos tuyos).
 - Te pregunta antes de borrar cada uno.
@@ -175,7 +214,7 @@ El uninstaller:
 Para borrar **todo** incluyendo perfil y log:
 
 ```bash
-node bin/uninstall.js --purge
+charly-skills uninstall --purge
 ```
 
 ## Multi-AI (próximamente)
@@ -194,8 +233,8 @@ El comando `charly-skills install --target <ai>` traduce las skills al formato d
 - [x] v1.0 — Installer básico Windows
 - [x] v1.5 — Symlink dev mode, uninstall, arrow menus en install
 - [x] v2.0 — Gitflow, TECH-DECISIONS, SYSTEM_PROMPT auto-trigger, session warmup
+- [x] v2.2 — CLI con subcomandos (`install`, `uninstall`, `update`, `status`, `doctor`)
 - [ ] v2.1 — Welcome screen con ASCII art branded
-- [ ] v2.2 — CLI con subcomandos (`install`, `uninstall`, `update`, `status`, `doctor`)
 - [ ] v3.0 — Multi-AI support (Cursor primero)
 
 ## Contribuir
@@ -212,6 +251,6 @@ Después editás los archivos del pack y los probás en tu Claude Code sin reins
 
 ## Licencia
 
-[MIT](LICENSE) © 2026 Carlos Jesus
+[MIT](LICENSE) © 2026 Carlos (carlos0718)
 
 Hecho con cariño desde Argentina 🧉
