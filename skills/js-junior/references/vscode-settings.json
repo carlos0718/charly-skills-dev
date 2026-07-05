@@ -1,0 +1,26 @@
+{
+  // ===== Modo aprendizaje: sin IA ni autocompletado =====
+  // Este archivo desactiva las ayudas que resuelven el código por ti.
+  // El objetivo es que escribas y pienses cada línea. Aplica al abrir
+  // esta carpeta en VS Code o Cursor (ambos leen .vscode/settings.json).
+
+  // --- GitHub Copilot (VS Code) ---
+  "github.copilot.enable": { "*": false },
+  "github.copilot.editor.enableAutoCompletions": false,
+  "chat.commandCenter.enabled": false,
+
+  // --- Cursor: autocompletado IA (Cursor Tab / Copilot++) ---
+  "cursor.cpp.disabledLanguages": ["*"],
+
+  // --- Sugerencias automáticas del editor ---
+  "editor.inlineSuggest.enabled": false,
+  "editor.quickSuggestions": { "other": "off", "comments": "off", "strings": "off" },
+  "editor.suggestOnTriggerCharacters": false,
+  "editor.wordBasedSuggestions": "off",
+  "editor.tabCompletion": "off",
+  "editor.acceptSuggestionOnEnter": "off",
+  "editor.parameterHints.enabled": false,
+
+  // --- No sugerir extensiones ---
+  "extensions.ignoreRecommendations": true
+}

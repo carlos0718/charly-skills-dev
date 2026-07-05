@@ -123,9 +123,15 @@ Conjunto de hábitos:
 
 ## Reglas de estilo de código
 
-### NO usar estilos inline
+### NO usar estilos inline — regla base, siempre activa
 
-> Salvo correcciones puntuales muy menores (un margin específico de 3px, un color override en un caso edge).
+> Esta regla NO es opt-in del perfil: aplica por default a **todo** proyecto con interfaz visual generado por `/new-project`, independientemente de lo que diga `profile.md`. Salvo correcciones puntuales muy menores (un margin específico de 3px, un color override en un caso edge).
+
+**Orden de prioridad para resolver estilos:**
+
+1. **Clases del framework/librería del stack elegido** — si el proyecto usa Tailwind, Bootstrap, Bulma, etc., usar esas clases.
+2. **Sistema de estilos del framework** — CSS Modules, styled-components, Emotion, Sass si el stack los incluye.
+3. **Archivo `.css` propio** — si el stack es HTML/CSS/JS vanilla o no tiene sistema de clases, crear un archivo `styles.css` (o uno por componente) y enlazarlo. Nunca dejar el estilo flotando inline porque "no hay framework".
 
 **Anti-patrón en React/JSX**:
 ```jsx
@@ -142,6 +148,21 @@ Conjunto de hábitos:
 <div className={styles.container}>
 ```
 
+**Correcto (HTML/CSS/JS vanilla — sin framework)**:
+```html
+<!-- index.html -->
+<link rel="stylesheet" href="styles.css">
+<div class="card">...</div>
+```
+```css
+/* styles.css */
+.card {
+  display: flex;
+  padding: 20px;
+  background-color: #fff;
+}
+```
+
 **Por qué**:
 - Los inline styles ignoran el sistema de tokens del proyecto (no respetan dark mode, no usan paleta).
 - No se puede reutilizar.
@@ -149,6 +170,36 @@ Conjunto de hábitos:
 - Más pesados que clases.
 
 **Excepción aceptable**: valores dinámicos calculados en runtime (ej. `style={{ width: progress + '%' }}` en una barra de progreso). Para esos casos sí, inline está bien.
+
+### Etiquetas semánticas HTML — regla base, siempre activa (SEO + accesibilidad)
+
+> Tampoco es opt-in: aplica a todo proyecto con HTML generado, sea React/Vue/Astro o HTML plano.
+
+Priorizar etiquetas semánticas sobre `<div>` genérico cuando la semántica del contenido lo permite:
+
+| Usar                | En vez de                          | Para                                  |
+|---------------------|-------------------------------------|----------------------------------------|
+| `<header>`          | `<div class="header">`              | Cabecera de página o sección          |
+| `<nav>`              | `<div class="nav">`                 | Bloques de navegación / menús         |
+| `<main>`             | `<div id="main">`                   | Contenido principal (uno por página)  |
+| `<article>`          | `<div class="post">`                | Contenido autocontenido (post, card de producto) |
+| `<section>`          | `<div class="section">`             | Agrupación temática de contenido      |
+| `<aside>`            | `<div class="sidebar">`             | Contenido relacionado/secundario      |
+| `<footer>`           | `<div class="footer">`              | Pie de página o sección               |
+| `<figure>`+`<figcaption>` | `<div>` con `<img>` + `<span>` | Imágenes con leyenda                  |
+| `<button>`           | `<div onClick>`                    | Cualquier elemento clickeable de acción |
+| `<a href>`           | `<div onClick>` con navegación      | Cualquier elemento que navega         |
+
+**Por qué importa para SEO:**
+- Los motores de búsqueda usan la estructura semántica para entender jerarquía y relevancia del contenido (qué es navegación vs contenido principal vs relleno).
+- `<h1>`–`<h6>` deben seguir orden jerárquico sin saltos (no pasar de `<h1>` a `<h3>` sin `<h2>`).
+- Listas reales (`<ul>`/`<ol>`/`<li>`) en vez de `<div>` repetidos para contenido tipo lista.
+
+**Por qué importa para accesibilidad:**
+- Lectores de pantalla anuncian la estructura semántica (landmarks) — un usuario con screen reader puede saltar directo a `<nav>` o `<main>` con un atajo de teclado.
+- `<div onClick>` no es focuseable ni anunciado como interactivo sin trabajo extra de ARIA — `<button>` y `<a>` lo traen gratis.
+
+**Excepción aceptable**: `<div>` y `<span>` siguen siendo correctos para agrupar elementos puramente visuales sin significado semántico propio (un wrapper de flexbox, un ícono decorativo).
 
 ### Funciones < 30 líneas
 
@@ -237,3 +288,13 @@ Para proyectos individuales, el usuario puede sobrescribir en el `CLAUDE.md` del
 Heredados del perfil global, con esta excepción:
 - KISS desactivado para este proyecto: necesito una arquitectura compleja porque es enterprise.
 ```
+
+### Reglas base — no son opt-in
+
+A diferencia de los principios de arriba (configurables por perfil), estas dos **siempre se aplican** en cualquier proyecto con interfaz visual, sin importar lo que diga `profile.md`:
+
+- **NO usar estilos inline** (clases del framework → sistema de estilos del framework → archivo `.css` propio, en ese orden de prioridad)
+- **Etiquetas semánticas HTML** (header/nav/main/article/section/aside/footer en vez de div genérico)
+
+Si el usuario pide explícitamente desactivarlas para un proyecto puntual, se puede, pero hay que confirmarlo antes:
+> "Por default este proyecto va a usar HTML semántico y cero estilos inline (regla base de la skill, no del perfil). ¿Querés que la desactive para este proyecto en particular?"

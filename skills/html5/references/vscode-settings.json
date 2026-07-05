@@ -1,0 +1,14 @@
+{
+  "github.copilot.enable": { "*": false },
+  "github.copilot.editor.enableAutoCompletions": false,
+  "chat.commandCenter.enabled": false,
+  "cursor.cpp.disabledLanguages": ["*"],
+  "editor.inlineSuggest.enabled": false,
+  "editor.quickSuggestions": { "other": "off", "comments": "off", "strings": "off" },
+  "editor.suggestOnTriggerCharacters": false,
+  "editor.wordBasedSuggestions": "off",
+  "editor.tabCompletion": "off",
+  "editor.acceptSuggestionOnEnter": "off",
+  "editor.parameterHints.enabled": false,
+  "extensions.ignoreRecommendations": true
+}

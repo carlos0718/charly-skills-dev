@@ -12,6 +12,7 @@ Cuando trabajes en este proyecto, asumí estos perfiles según el contexto del p
 - Hidratación, suspense, streaming
 - Componentes accesibles desde la base
 - Patrones de estado local vs global (ver `coding-principles.md`)
+- **Regla base siempre activa**: cero estilos inline (clases del framework → sistema de estilos del framework → archivo `.css` propio) y etiquetas HTML semánticas en vez de `<div>` genérico — ver `coding-principles.md` sección "Reglas base — no son opt-in"
 
 ### Backend
 - Diseño de APIs (REST, GraphQL, RPC) con contratos explícitos
@@ -48,6 +49,8 @@ Cuando trabajes en este proyecto, asumí estos perfiles según el contexto del p
 - Sitemap.xml + robots.txt
 - `<html lang>` correcto, hreflang si hay multi-idioma
 - URLs limpias y semánticas
+- **Etiquetas HTML semánticas** (`<header>`, `<nav>`, `<main>`, `<article>`, `<section>`, `<aside>`, `<footer>`) en vez de `<div>` genérico — ayuda a los motores de búsqueda a entender la jerarquía del contenido
+- Jerarquía de headings sin saltos: `<h1>` único por página, seguido por `<h2>`, `<h3>` en orden
 
 ### Accesibilidad — WCAG 2.1 nivel AA
 - Labels asociados (`label htmlFor` + `id`)
@@ -173,6 +176,109 @@ Resumen de la estructura:
 ## Gotchas / cosas a recordar
 
 - (vacío al inicio, agregar acá problemas conocidos y workarounds)
+
+## Agregar o modificar features — flujo de iteración (Spec-First)
+
+**Regla:** antes de escribir cualquier línea de código para una feature nueva o un cambio de dominio, los documentos de arquitectura se actualizan primero y se commitean. El código siempre viene después de la spec.
+
+### Cuándo aplica este flujo
+
+- El usuario dice "quiero agregar X", "vamos a incorporar Y", "necesito que también haga Z"
+- El usuario dice "quitemos X", "simplificamos Y", "eso ya no va"
+- El usuario agrega una entidad nueva al dominio, cambia relaciones, o modifica reglas de negocio
+
+### Pasos del flujo
+
+```
+1. SPEC.md primero
+   └── Agregar / quitar la feature en la tabla de prioridades (P0/P1/P2)
+   └── Agregar / quitar user stories si aplica
+   └── Actualizar criterios de aceptación del MVP
+
+2. Dominio (si la feature toca entidades o reglas de negocio)
+   └── Actualizar diagrama de entidades en SPEC.md
+   └── Actualizar DB schema en SPEC.md (agregar/modificar/eliminar tabla o columna)
+   └── Actualizar API contracts si cambian endpoints
+
+3. TODO.md
+   └── Agregar las nuevas tareas en la sección correcta (Dominio/DB → API → Frontend)
+   └── Si se quitó algo, marcar o eliminar las tareas correspondientes
+
+4. COMMIT de documentación (antes del código)
+   └── git add SPEC.md TODO.md
+   └── git commit -m "docs: [agregar|quitar] feature X — spec y dominio actualizados"
+   └── git push
+
+5. Implementar el código
+   └── Seguir el orden del TODO: DB → API → Frontend
+   └── Cada tarea = 1 commit + push (según la convención de git de este proyecto)
+```
+
+### Formato del commit de documentación
+
+```
+docs: agregar feature [nombre] — SPEC y dominio actualizados
+docs: quitar feature [nombre] — SPEC simplificado
+docs: modificar dominio — [entidad] ahora tiene [cambio]
+```
+
+### Por qué este orden importa
+
+Si el código va antes que la spec, en 2 semanas el SPEC.md refleja lo que se pensó al principio, no lo que se construyó. El dominio queda desincronizado con la DB real. El TODO.md tiene tareas para features que ya no existen. Spec-First evita eso: los documentos son siempre la fuente de verdad.
+
+---
+
+## README sync — al completar una sección del TODO
+
+**Regla:** cuando se marca el **último checkbox de una sección completa** del `TODO.md`, actualizar la sección correspondiente del `README.md` antes del commit — así el README siempre refleja el estado real del proyecto.
+
+| Sección de TODO.md       | Qué actualizar en README.md                                                                   |
+|--------------------------|-----------------------------------------------------------------------------------------------|
+| **Setup**                | Verificar/completar scripts (`dev`, `build`, `test`, `lint`), pasos de instalación y variables de entorno |
+| **Features iniciales**   | Agregar o actualizar la sección "Features" con lo que realmente se construyó                  |
+| **Calidad**              | Actualizar comando de lint/coverage, agregar badge si aplica                                  |
+| **Deploy**               | Agregar URL de producción, hosting, y variables de entorno de prod si corresponde             |
+| **Documentación**        | Completar secciones vacías, agregar links a docs adicionales o diagramas generados            |
+
+**Formato del commit cuando se hace README sync** (última tarea de la sección + README):
+```
+docs: update README — sección <nombre> completada (TODO: <última tarea>)
+```
+
+**Cuándo NO disparar el sync:**
+- Si quedan `- [ ]` sin marcar en la sección — todavía no es el momento.
+- Si la sección no tiene impacto visible en el README (ej. refactors internos) — se puede omitir.
+- Si el usuario prefiere controlar el README manualmente — respetar, pero avisar al llegar al final de cada sección.
+
+---
+
+## Workflow de Git — 1 tarea de TODO.md = 1 commit + push
+
+**Regla obligatoria para cualquier sesión de Claude Code en este proyecto:**
+
+Cada vez que se complete una tarea de `TODO.md`:
+
+1. Editar `TODO.md` y marcar el checkbox como hecho: `- [ ]` → `- [x]`
+2. Hacer `git add` de **los archivos de código relacionados a esa tarea + el `TODO.md` editado, todo junto** (no mezclar varias tareas en un commit, y no dejar el `TODO.md` para un commit aparte)
+3. Commitear con mensaje que referencia el texto exacto de la tarea:
+   ```
+   <tipo>: <descripción corta> (TODO: <texto de la tarea>)
+   ```
+   Ejemplo:
+   ```
+   feat: setup JWT auth middleware (TODO: Configurar autenticación)
+   test: add login flow unit tests (TODO: Escribir primer smoke test)
+   ```
+4. Hacer `git push` inmediatamente — no acumular commits sin pushear.
+
+**Regla de sincronía:** el checkbox de `TODO.md` y el código que resuelve esa tarea viajan **siempre en el mismo commit**. Nunca marcar `- [x]` sin commitear el cambio correspondiente, y nunca commitear una tarea resuelta sin actualizar su checkbox. Si por algún motivo se commitea código sin terminar de cerrar la tarea, el checkbox queda en `- [ ]` y se aclara en el mensaje del commit con `(WIP)`.
+
+**Por qué:** así cada tarea del TODO queda trazable en el historial del repo — cualquiera puede ver en qué commit se resolvió cada ítem, el estado de `TODO.md` en cualquier commit refleja exactamente qué estaba terminado en ese momento, y el TODO.md actúa como índice del log de git.
+
+**Excepciones:**
+- Si una tarea requiere varios commits (ej. "Configurar CI" = setup + ajustes), está bien — todos referencian la misma tarea en su mensaje.
+- Si el usuario pide explícitamente no pushear todavía (trabajo en progreso, rama experimental), respetar eso y avisar que el push queda pendiente.
+- Cambios que NO corresponden a ninguna tarea del TODO (fixes menores, typos) se commitean normal, sin la referencia `(TODO: ...)`.
 
 ## Próximas decisiones pendientes
 
