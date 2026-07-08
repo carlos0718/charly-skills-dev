@@ -1,6 +1,6 @@
 ---
 name: new-project
-description: Crea un proyecto desde cero en base al perfil técnico/creativo del usuario y a su historial de proyectos. Soporta proyectos de código (web app, API, script, mobile), creativos (video ad, motion piece, social content) e híbridos (web con animación 3D, landing inmersiva). Genera estructura de carpetas, instala stack elegido, crea CLAUDE.md/README.md/TODO.md, y reporta validación final. Usar cuando el usuario quiera arrancar un proyecto nuevo, diga "nuevo proyecto", "armar proyecto", "iniciar proyecto", "scaffold", "boilerplate", "setup inicial", o describa querer empezar algo desde cero. También usar cuando el usuario esté trabajando en un proyecto iniciado con esta skill y diga "continuemos", "retomemos el proyecto", "qué me falta hacer", "qué sigue", "sigamos con el TODO", "próxima tarea", "próximo paso", "en qué estaba", "seguir trabajando", "retomar" — en ese caso la skill busca `.skill-state.json` y reanuda desde donde quedó.
+description: Crea proyectos desde cero o adopta proyectos ya iniciados. Soporta código (web app, API, fullstack, script, mobile), creativos (video ad, motion) e híbridos. Genera SPEC.md, CLAUDE.md, TODO.md, design system y arquitectura documentada con SDD+DDD. Tres modos — (1) nuevo: "nuevo proyecto", "armar proyecto", "iniciar proyecto", "scaffold", "boilerplate", "setup inicial"; (2) reanudación: "continuemos", "qué sigue", "retomemos", "próxima tarea", "próximo paso", "en qué estaba", "seguir trabajando", "retomar"; (3) adopción de proyecto existente sin la skill: "tengo un proyecto ya avanzado", "el proyecto ya tiene código", "adoptar proyecto", "aplicar la skill a este proyecto", "el proyecto ya estaba iniciado". Keywords completos (ES+EN) en references/triggers.md.
 ---
 
 # /new-project — Skill de creación de proyectos
@@ -10,6 +10,15 @@ Esta skill arma proyectos personalizados según el perfil del usuario (`~/.claud
 ## Cómo usar esta skill
 
 Cuando se invoca:
+
+**Antes de todo — detección de proyecto existente:**
+Verificar si el directorio actual (cwd) tiene señales de proyecto ya iniciado:
+- Tiene `.git/` o `package.json` o `requirements.txt` o `Cargo.toml` o `go.mod`
+- **Y** no tiene `.skill-state.json` (es decir, no fue creado con esta skill)
+
+Si esa condición se cumple → ir directamente a **Modo Adopción** (ver sección más abajo). No ejecutar el flujo P0–P8 normal.
+
+Si la condición no se cumple → continuar con el flujo normal:
 
 1. Lee `~/.claude/profile.md` (perfil técnico + creativo del usuario).
 2. Lee `~/.claude/activity-log.jsonl` (últimas 50 líneas para inferir patrones recientes).
@@ -35,6 +44,196 @@ Si la skill se invoca con frases de continuación ("qué sigue", "retomemos", "p
 2. **Leer `TODO.md`** — ¿cuál es la próxima tarea sin hacer? ¿hay tareas pendientes de la sección actual?
 3. **Si el usuario menciona una feature nueva o cambio de dominio** → aplicar el flujo Spec-First (ver `CLAUDE.md` del proyecto, sección "Agregar o modificar features") antes de escribir código.
 4. **Si es continuación normal** → retomar desde la próxima tarea del TODO, siguiendo el orden: Dominio/DB → API/Backend → Frontend/UI.
+
+## Modo Adopción — proyecto existente sin `.skill-state.json`
+
+Este modo se activa cuando el directorio tiene código ya escrito pero NO fue creado con esta skill. El objetivo no es empezar de cero: es **retro-aplicar** las convenciones de la skill sobre lo que ya existe.
+
+**Regla principal:** nunca sobreescribir archivos que ya existen salvo confirmación explícita del usuario. Todo lo que ya está se respeta; solo se genera lo que falta.
+
+### MA-1 · Scan automático del proyecto
+
+Leer el estado actual del proyecto con una combinación de herramientas disponibles:
+
+```bash
+# Detectar tipo de proyecto y stack
+cat package.json          # dependencies, scripts, devDependencies
+ls -la                    # archivos en raíz (README.md, SPEC.md, CLAUDE.md, TODO.md, etc.)
+find . -maxdepth 3 -type d  # estructura de carpetas (arquitectura actual)
+```
+
+Procesar los resultados para detectar:
+
+| Aspecto | Qué buscar |
+|---|---|
+| **Runtime / lenguaje** | `package.json` → Node/TS/JS; `requirements.txt` → Python; `Cargo.toml` → Rust; `go.mod` → Go |
+| **Framework frontend** | deps: `react`, `vue`, `svelte`, `angular`, `astro`, `next`, `nuxt` |
+| **Framework backend** | deps: `express`, `fastify`, `nestjs`, `hono`, `fastapi`, `django` |
+| **Estilos** | deps: `tailwindcss`, `@mui/material`, `bootstrap`, `styled-components`, `sass` |
+| **Testing** | deps: `vitest`, `jest`, `playwright`, `cypress` |
+| **ORM / DB** | deps: `prisma`, `drizzle-orm`, `mongoose`, `typeorm` |
+| **Arquitectura** | carpetas en `src/`: `features/`, `components/`, `domain/`, `pages/`, `api/`, `routes/` |
+| **Archivos de skill** | `CLAUDE.md`, `SPEC.md`, `TODO.md`, `design-system/MASTER.md` — qué ya existe |
+
+### MA-2 · Presentar hallazgos + pedir descripción
+
+Mostrar al usuario lo encontrado y pedir los datos que no se pueden inferir del código:
+
+```
+Encontré un proyecto existente con:
+
+  Runtime:    Node.js / TypeScript
+  Frontend:   React (Vite)
+  Estilos:    Tailwind CSS
+  Testing:    Vitest
+  Arquitectura actual: src/components/, src/pages/, src/hooks/
+
+Archivos de la skill que ya existen:
+  [v] README.md
+  [x] CLAUDE.md          ← lo generamos
+  [x] SPEC.md            ← lo generamos
+  [x] TODO.md            ← lo generamos
+  [x] design-system/     ← lo generamos
+
+Para adaptar la skill a este proyecto necesito que me cuentes:
+
+  1. ¿De qué trata el proyecto? (descripción breve del objetivo)
+  2. ¿Qué tipo es? (web app, API, fullstack, landing, otra)
+  3. ¿Está solo el frontend o también tiene backend/DB?
+
+(Si ya hay un README.md con descripción, lo leo y lo uso como base — confirmame si está actualizado)
+```
+
+### MA-3 · Análisis SDD + DDD (adaptado a código existente)
+
+**Paso A — Determinar si aplica DDD:**
+Usar la misma tabla de decisión de P1.7 (fullstack/backend → sí; frontend puro → no).
+
+**Paso B — Análisis de dominio (si aplica):**
+En vez de preguntar desde cero, primero intentar inferir las entidades del código existente:
+- Leer archivos en `src/domain/`, `src/models/`, `src/entities/`, `prisma/schema.prisma`, `src/types/` si existen
+- Si se encuentra un schema o modelos → mostrarlos al usuario y preguntar *"¿Esto refleja bien tu dominio o hay cambios?"*
+- Si no hay nada que inferir → hacer las 3 preguntas del Paso B de P1.7 igual que en el flujo normal
+
+**Paso C — Generar SPEC.md:**
+Generar el SPEC.md igual que en P1.7, pero:
+- En la sección "Features MVP" → marcar como ✅ las features que claramente ya existen en el código (inferido de las rutas, componentes, o README existente)
+- En "Criterios de aceptación" → dejar los pendientes como `- [ ]` y los ya resueltos como `- [x]`
+- Mostrar al usuario antes de guardar:
+  > "Generé el SPEC.md del proyecto. Revisá especialmente qué marqué como ✅ (ya hecho) y qué quedó como pendiente — quiero que quede con el estado real del proyecto."
+
+### MA-4 · Documentar arquitectura (adaptado a código existente)
+
+En vez de correr el flujo completo de P4 desde cero, leer la estructura actual de carpetas e inferir la arquitectura que ya se está usando:
+
+```
+La estructura que encontré en src/ sugiere una arquitectura Feature-based:
+  src/features/auth/
+  src/features/dashboard/
+  src/shared/components/
+
+¿Es eso lo que usás, o fue evolucionando sin un patrón intencional?
+> 1) Sí, es Feature-based intencional
+  2) No tiene estructura clara todavía — ayudame a definir una
+  3) Es otra arquitectura (la describo)
+```
+
+Si el usuario elige **1**: documentar la arquitectura detectada directamente en el CLAUDE.md generado, con su descripción, beneficios y trade-offs según `references/architectures.md`.
+
+Si el usuario elige **2**: ejecutar el flujo completo de P4 (scoring + recomendación educativa) igual que en proyectos nuevos, pero aclarando: *"La estructura actual es libre. Te propongo una arquitectura para que la adoptemos de acá en adelante — no hace falta refactorear lo que ya existe, sino seguir el patrón en el código nuevo."*
+
+Si el usuario elige **3**: el usuario describe, se documenta su elección.
+
+### MA-5 · Design System (si tiene interfaz visual)
+
+Si el proyecto tiene frontend, ejecutar P4.5 normalmente. Pero antes:
+- Verificar si ya hay un `tailwind.config.js`, `theme.ts`, variables CSS, o sistema de tokens definido
+- Si hay tokens o colores definidos → leerlos y usarlos como base para el `design-system/MASTER.md` en vez de generarlo desde cero
+- Mostrar: *"Encontré estos tokens de color en tu proyecto. ¿Los uso como base del design system o querés definirlo desde cero?"*
+
+### MA-6 · Generar archivos faltantes
+
+Para cada archivo que el audit de MA-1 marcó con `[x]` (no existe), generarlo usando los templates y la información recolectada:
+
+| Archivo | Template base | Datos usados |
+|---|---|---|
+| `CLAUDE.md` | `references/templates/CLAUDE.md.template` | Stack detectado, arquitectura documentada, principios del perfil |
+| `TODO.md` | `references/templates/TODO.md.template` | Features del SPEC.md (las ✅ ya marcadas como hecho, las pendientes como `- [ ]`) |
+| `design-system/MASTER.md` | — | Resultado de MA-5 |
+
+**Regla de no sobreescritura:** si alguno ya existe, preguntar:
+> "`CLAUDE.md` ya existe en este proyecto. ¿Lo reemplazo con la versión de la skill, lo mergeo, o lo dejo como está?"
+> 1) Reemplazar (se pierde el actual)
+> 2) Mergear (te muestro las secciones nuevas que agregaría)
+> 3) Dejar como está
+
+Para la opción **2 (mergear)**: mostrar solo las secciones que NO están en el archivo actual (por ejemplo, si le falta la sección "Agregar o modificar features — flujo de iteración", agregar esa sección al final del existente).
+
+### MA-7 · TODO desde estado actual
+
+Generar el TODO adaptado al estado real del proyecto. Antes de generarlo preguntar:
+
+```
+Para armar el TODO desde el estado actual del proyecto, necesito saber:
+
+  1. ¿Qué está terminado?
+     (te muestro las features del SPEC y me decís cuáles ya están listas)
+  2. ¿Qué está en progreso ahora?
+  3. ¿Qué es lo próximo que querés hacer?
+```
+
+Generar el TODO con:
+- Sección `Setup` marcada completamente como `[x]` (si el proyecto ya tiene deps instaladas y dev server andando)
+- Features ya terminadas marcadas como `[x]`
+- Features en progreso como `[ ]` con nota `<!-- en progreso -->`
+- Features pendientes como `[ ]`
+- Conservar las secciones DDD si el proyecto es fullstack (Dominio/DB, API/Backend, Frontend/UI)
+
+### MA-8 · Reporte de adopción
+
+Al terminar, mostrar un resumen de lo que se hizo:
+
+```
+=== Adopción completada ===
+Proyecto: <nombre>
+Stack detectado: <resumen>
+Arquitectura: <nombre>
+
+Archivos generados:
+  [v] SPEC.md           (estado actual del proyecto documentado)
+  [v] CLAUDE.md         (convenciones y roles del asistente)
+  [v] TODO.md           (estado real: X hechas, Y pendientes)
+  [v] design-system/MASTER.md
+
+A partir de ahora:
+  • Usá las frases "continuemos", "qué sigue", "próxima tarea" para que
+    la skill retome desde el TODO.
+  • Cuando agregues features, la skill aplica el flujo Spec-First
+    (actualiza SPEC.md antes de escribir código).
+  • Cada tarea completada = 1 commit + push (ver sección en CLAUDE.md).
+```
+
+### Nota sobre `.skill-state.json` en Modo Adopción
+
+Al finalizar la adopción, crear un `.skill-state.json` mínimo que marque el proyecto como adoptado:
+
+```json
+{
+  "mode": "adopted",
+  "timestamp": "<ISO date>",
+  "step": "adoption_complete",
+  "decisions": {
+    "stack_detected": true,
+    "spec_generated": true,
+    "claude_md_generated": true,
+    "todo_generated": true
+  }
+}
+```
+
+Esto evita que la skill vuelva a ofrecer el Modo Adopción en sesiones futuras, y en cambio usa el flujo normal de Reanudación.
+
+---
 
 ## Modo de menús — texto vs interactivo
 
@@ -794,6 +993,136 @@ Tiempo total:   2 min 14 s
 
 Si hubo saltos o fallos, ofrecer revisar el TODO.md para registrarlos como pendientes (en P7).
 
+### P5.5 · Infraestructura de deploy
+
+**Saltear si:** el proyecto es una librería sin servidor, un script CLI, o un creativo puro → ir directo a P6.
+
+**Detección automática:** si ya existe un `SPEC.md` o documento de arquitectura con decisiones de infra (palabras clave: "deploy", "hosting", "Docker", "CI/CD", "AWS", "GCP", "Azure", "Render", "Railway", "Fly"), leerlas y usarlas como base sin preguntar desde cero:
+> "Encontré decisiones de infraestructura en tu SPEC.md: [resumen de lo encontrado]. Las uso como base — ¿seguimos o ajustamos algo?"
+
+Si no hay nada definido, ejecutar las 3 preguntas en secuencia:
+
+#### Pregunta 1 — Docker
+
+```
+¿Querés dockerizar la app?
+> 1) Sí — genero Dockerfile + .dockerignore + docker-compose.yml (dev)
+  2) Por ahora no — agrego la tarea al TODO para después
+  3) ¿Qué es Docker? — explicame
+```
+
+**Si elige 3:**
+> Docker empaqueta tu app con todo lo que necesita para correr (runtime, dependencias, configuración) en una "imagen" portátil. Esa imagen funciona igual en tu máquina, en la de un colega y en el servidor de producción. Sin Docker, "en mi máquina anda" es el problema eterno en equipos. También simplifica el deploy: la misma imagen que probaste local es la que sube a producción.
+> ¿Lo agregamos? (s/n)
+
+**Si Docker = sí**, generar:
+- `Dockerfile` — multi-stage build: stage `builder` (instala deps y compila) + stage `runner` (imagen final mínima con non-root user y healthcheck).
+- `.dockerignore` — excluir `node_modules/`, `.env`, `.git/`, `dist/`, `coverage/`.
+- `docker-compose.yml` — servicio de la app + servicios auxiliares según el stack (PostgreSQL si hay DB, Redis si hay caché, etc.).
+
+#### Pregunta 2 — Plataforma de deploy
+
+```
+¿Dónde vas a deployar?
+> 1) Ya lo sé — decime cuál
+  2) No sé, elegimos una ahora
+  3) Todavía no lo defino — agrego tarea al TODO
+```
+
+**Si elige 2 — tabla comparativa:**
+
+```
+Plataforma        | Complejidad | Costo base  | Ideal para
+------------------|-------------|-------------|------------------------------
+Render            | Baja        | Free tier   | MVPs, side projects, APIs
+Railway           | Baja        | Free tier   | Fullstack sencillo, monorepos
+Fly.io            | Media       | Free tier   | Apps multi-región
+Vercel            | Mínima      | Free        | Frontend, Next.js, Edge/SSR
+Netlify           | Mínima      | Free        | Frontend estático, funciones
+Cloud Run (GCP)   | Media       | Pay-as-go   | Containers serverless
+AWS (ECS/EC2)     | Alta        | Pay-as-go   | Enterprise, control total
+Azure             | Alta        | Pay-as-go   | Enterprise Microsoft
+DigitalOcean      | Media       | ~$5/mes     | VPS directo y simple
+
+¿Cuál elegís? (número o nombre)
+```
+
+**Según la plataforma elegida**, generar el archivo de configuración:
+
+| Plataforma | Archivo generado |
+|---|---|
+| Render | `render.yaml` |
+| Railway | `railway.json` |
+| Fly.io | `fly.toml` |
+| Vercel | `vercel.json` |
+| Netlify | `netlify.toml` |
+| Cloud Run (GCP) | `cloudbuild.yaml` + `.github/workflows/deploy-gcp.yml` |
+| AWS ECS | `task-definition.json` + `.github/workflows/deploy-aws.yml` |
+| Azure | `.github/workflows/deploy-azure.yml` |
+| DigitalOcean | `.do/app.yaml` |
+
+#### Pregunta 3 — CI/CD
+
+```
+¿Configuramos CI/CD?
+> 1) CI básico — lint + test automático en cada PR (recomendado siempre)
+  2) CI/CD completo — lint + test + build + deploy automático al mergear a main
+  3) Por ahora no
+  4) ¿Qué es CI/CD? — explicame
+```
+
+**Si elige 4:**
+> **CI (Continuous Integration):** cada vez que alguien pushea código o abre un PR, los tests y el linter corren automáticamente. Si algo se rompe, lo sabés antes de que llegue a producción.
+>
+> **CD (Continuous Deployment):** cuando el CI pasa, el deploy a producción es automático. Mergeas a `main` → en minutos está live, sin intervención manual.
+>
+> Para empezar, **CI básico** es lo mínimo recomendado para cualquier proyecto serio. CD lo activás cuando la suite de tests da confianza. ¿Qué elegís?
+
+**Si CI básico o CI/CD completo**, generar `.github/workflows/ci.yml` (adaptado al stack — Node, Python, Go, etc.):
+
+```yaml
+name: CI
+on: [push, pull_request]
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+```
+
+Si eligió **CI/CD completo** y ya eligió una plataforma en Pregunta 2, agregar el job de deploy al mismo workflow (o crear `.github/workflows/deploy.yml` separado según el provider).
+
+**Si el repo es GitLab** (detectado por `.gitlab-ci.yml` existente o por el remote URL), generar `.gitlab-ci.yml` en vez de GitHub Actions.
+
+#### Siempre, sin preguntar
+
+Independientemente de las respuestas:
+
+1. **`.env.example`** — crear con todas las variables de entorno conocidas (vacías o con valores de ejemplo):
+   ```
+   # App
+   PORT=3000
+   NODE_ENV=development
+
+   # Base de datos (si aplica)
+   DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+
+   # Auth (si aplica)
+   JWT_SECRET=
+   SESSION_SECRET=
+   ```
+
+2. **`.gitignore`** — verificar que incluya `.env`, `.env.local`, `.env.*.local`. Si no existe, crear con los ignores mínimos para el stack.
+
+3. **Agregar tareas al TODO** (sección "Infraestructura / Deploy") con lo que quedó pendiente según las elecciones.
+
+4. **Actualizar `CLAUDE.md`** con la sección "Infraestructura de deploy" documentando las decisiones tomadas.
+
 ### P6 · Genera archivos base
 
 Crear, dentro del directorio del proyecto, copiando desde `references/templates/`:
@@ -825,11 +1154,21 @@ Si el usuario pide explícitamente desactivar alguna de estas dos para el proyec
 - Si "Funciones < 30 líneas" está activo → no generar funciones largas; partir en helpers.
 - Si "Logs estructurados" está activo → usar `logger.info({ key: val })` en vez de `console.log("texto")`.
 
-**Rellenar el CLAUDE.md generado con la sección "Principios de código aplicados a este proyecto"**: copiar de la plantilla y completar:
-- `{{ACTIVE_PATTERNS}}` con los patrones marcados en el perfil del usuario.
-- `{{ACTIVE_PRINCIPLES}}` con los principios marcados.
+**Rellenar el CLAUDE.md generado con la sección "Principios de código aplicados a este proyecto"**: los principios SOLID, DRY, KISS, YAGNI y Clean Code ya vienen escritos en la plantilla (no son placeholders — aplican siempre). Solo completar:
+- `{{ACTIVE_PATTERNS}}` con los patrones relevantes según la arquitectura elegida en P4 (ej. Repository, Factory, Observer, Strategy). Si el perfil tiene patrones activos, incluirlos también.
 - `{{STYLE_TECH}}` con la tecnología de estilos elegida (Tailwind / styled-components / CSS Modules / etc.).
-- `{{LOCAL_OVERRIDE_*}}` dejar vacío salvo que el usuario haya pedido alguna excepción.
+- `{{LOCAL_OVERRIDE_*}}` dejar vacío salvo que el usuario haya pedido explícitamente romper alguna regla.
+
+**Rellenar el CLAUDE.md generado con la sección "Infraestructura de deploy"** (datos de P5.5):
+- `{{DOCKER}}` → "sí (Dockerfile + docker-compose.yml generados)" | "no" | "pendiente (tarea en TODO)"
+- `{{DEPLOY_PLATFORM}}` → nombre de la plataforma elegida | "pendiente"
+- `{{CICD}}` → "CI básico (.github/workflows/ci.yml)" | "CI/CD completo" | "no configurado"
+- `{{INFRA_CONFIG_FILE}}` → nombre del archivo generado (render.yaml, fly.toml, etc.) | "—"
+
+**Rellenar el TODO.md generado** con la sección "Infraestructura / Deploy":
+- Descomentar las tareas de Docker si se eligió dockerizar.
+- Descomentar las tareas de CI/CD si se configuró CI.
+- Reemplazar `{{DEPLOY_PLATFORM}}` con el nombre real de la plataforma (o "TBD" si quedó pendiente).
 
 ### P7 · TODO colaborativo
 

@@ -38,10 +38,21 @@
 - [ ] Documentar decisiones clave en CLAUDE.md
 - [ ] Agregar diagramas si aplica
 
-## Deploy
-<!-- 📄 README sync → agregar URL de producción, hosting y variables de entorno de prod -->
+## Infraestructura / Deploy
+<!-- 📄 README sync → agregar URL de producción, plataforma, variables de entorno de prod y badge de CI si aplica -->
 
-- [ ] Elegir hosting / infra
-- [ ] Configurar variables de producción
-- [ ] Configurar dominio
-- [ ] Primer deploy
+<!-- Docker (descomentar si se eligió dockerizar en P5.5) -->
+<!-- - [ ] Verificar que `docker build` y `docker-compose up` funcionan en local -->
+<!-- - [ ] Probar imagen en modo producción: `docker-compose -f docker-compose.prod.yml up` -->
+
+<!-- CI/CD (descomentar según lo configurado en P5.5) -->
+<!-- - [ ] Verificar que el workflow de CI pasa en el primer push -->
+<!-- - [ ] Configurar secrets en GitHub / GitLab (JWT_SECRET, DATABASE_URL, etc.) -->
+<!-- - [ ] Confirmar que los badges de CI aparecen en el README -->
+
+- [ ] Completar `.env.example` con todas las variables necesarias
+- [ ] Configurar variables de entorno en la plataforma de deploy
+- [ ] Conectar el repo a la plataforma ({{DEPLOY_PLATFORM}})
+- [ ] Configurar dominio / URL de producción
+- [ ] Primer deploy exitoso
+- [ ] Verificar que la app funciona en producción (smoke test manual)

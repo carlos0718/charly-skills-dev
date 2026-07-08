@@ -114,6 +114,16 @@ Mencionar los trade-offs entre roles al usuario cuando son significativos.
 - **Testing**: {{TESTING}}
 - **Otros**: {{OTHER_TOOLS}}
 
+## Infraestructura de deploy
+
+- **Docker**: {{DOCKER}}  <!-- sí (Dockerfile + docker-compose.yml) | no | pendiente -->
+- **Plataforma**: {{DEPLOY_PLATFORM}}  <!-- Render | Railway | Fly.io | Vercel | AWS | GCP | Azure | pendiente -->
+- **CI/CD**: {{CICD}}  <!-- CI básico | CI/CD completo | no configurado -->
+- **Archivo de config**: {{INFRA_CONFIG_FILE}}  <!-- render.yaml | fly.toml | .github/workflows/ci.yml | etc. -->
+- **Variables de entorno**: `.env.example` generado — completar valores reales antes del primer deploy
+
+> Las variables de entorno nunca van al repo. `.env` está en `.gitignore`. Los secrets de producción se configuran en el panel de la plataforma elegida (o en GitHub Secrets si usás CI/CD).
+
 ## Arquitectura
 
 {{ARCHITECTURE_NAME}}
@@ -139,21 +149,26 @@ Resumen de la estructura:
 
 ## Principios de código aplicados a este proyecto
 
-> Heredados de `~/.claude/profile.md` sección "Principios de código".
-> Definiciones completas en `~/.claude/skills/new-project/references/coding-principles.md`.
+> Definiciones completas: `~/.claude/skills/new-project/references/coding-principles.md`
 
-**Activos por default**:
-- Patrones: {{ACTIVE_PATTERNS}}  <!-- ej. SOLID, Repository, Factory -->
-- Principios: {{ACTIVE_PRINCIPLES}}  <!-- DRY, KISS, YAGNI, Clean Code -->
+**Principios siempre activos — no son opt-in, aplican a todo el código de este proyecto:**
 
-**Reglas de estilo aplicadas en este stack** ({{STACK_SUMMARY}}):
-- NO usar estilos inline ({{STYLE_TECH}}), salvo valores dinámicos en runtime.
-- Early returns en vez de pirámides de `if`.
-- Tipado explícito en TS, evitar `any`.
-- Funciones < 30 líneas (guideline).
-- Logs estructurados (no `console.log` con strings).
+| Principio | Qué significa en la práctica |
+|---|---|
+| **SOLID** | Cada módulo tiene una sola razón para cambiar (SRP). Extender sin modificar lo existente (OCP). Interfaces pequeñas y específicas (ISP). Depender de abstracciones, no de implementaciones concretas (DIP). |
+| **DRY** — Don't Repeat Yourself | Si una lógica aparece dos veces, extraerla a una función, hook o constante. Duplicación = deuda técnica garantizada. |
+| **KISS** — Keep It Simple | La solución más simple que resuelve el problema es la correcta. Complejidad solo cuando el problema la exige, nunca por anticipación. |
+| **YAGNI** — You Aren't Gonna Need It | No implementar lo que no se necesita hoy. El over-engineering es deuda técnica disfrazada de previsión. |
+| **Clean Code** | Nombres que se explican solos. Funciones < 30 líneas. Early returns en vez de pirámides de `if`. Sin comentarios obvios. Logs estructurados (`logger.info({ key: val })`), nunca `console.log("texto")`. |
 
-**Overrides locales (este proyecto puntual rompe alguna regla)**:
+**Patrones activos de este proyecto** (según arquitectura elegida en setup):
+- {{ACTIVE_PATTERNS}}  <!-- ej. Repository, Factory, Observer, Strategy -->
+
+**Reglas de estilo de este stack** ({{STACK_SUMMARY}}):
+- Sin estilos inline (`{{STYLE_TECH}}`), salvo valores calculados en runtime.
+- Tipado explícito en TS — evitar `any`, preferir tipos inferidos o genéricos.
+
+**Overrides locales — este proyecto rompe alguna regla intencionalmente:**
 - {{LOCAL_OVERRIDE_1}}  <!-- ej. "KISS desactivado: arquitectura compleja por requisito enterprise" -->
 - {{LOCAL_OVERRIDE_2}}
 
@@ -252,11 +267,11 @@ docs: update README — sección <nombre> completada (TODO: <última tarea>)
 
 ---
 
-## Workflow de Git — 1 tarea de TODO.md = 1 commit + push
+## Workflow de Git — 1 user story / tarea = 1 commit + push
 
 **Regla obligatoria para cualquier sesión de Claude Code en este proyecto:**
 
-Cada vez que se complete una tarea de `TODO.md`:
+Cada ítem del `TODO.md` representa una **user story o paso de implementación**. Cuando se completa uno:
 
 1. Editar `TODO.md` y marcar el checkbox como hecho: `- [ ]` → `- [x]`
 2. Hacer `git add` de **los archivos de código relacionados a esa tarea + el `TODO.md` editado, todo junto** (no mezclar varias tareas en un commit, y no dejar el `TODO.md` para un commit aparte)
@@ -267,18 +282,19 @@ Cada vez que se complete una tarea de `TODO.md`:
    Ejemplo:
    ```
    feat: setup JWT auth middleware (TODO: Configurar autenticación)
+   feat: render product listing with filters (TODO: Listado de productos con filtros)
    test: add login flow unit tests (TODO: Escribir primer smoke test)
    ```
 4. Hacer `git push` inmediatamente — no acumular commits sin pushear.
 
-**Regla de sincronía:** el checkbox de `TODO.md` y el código que resuelve esa tarea viajan **siempre en el mismo commit**. Nunca marcar `- [x]` sin commitear el cambio correspondiente, y nunca commitear una tarea resuelta sin actualizar su checkbox. Si por algún motivo se commitea código sin terminar de cerrar la tarea, el checkbox queda en `- [ ]` y se aclara en el mensaje del commit con `(WIP)`.
+**Regla de sincronía:** el checkbox de `TODO.md` y el código que resuelve esa tarea viajan **siempre en el mismo commit**. Nunca marcar `- [x]` sin commitear el cambio correspondiente, y nunca commitear una tarea resuelta sin actualizar su checkbox. Si el código está a medias, el checkbox queda en `- [ ]` y el mensaje del commit incluye `(WIP)`.
 
-**Por qué:** así cada tarea del TODO queda trazable en el historial del repo — cualquiera puede ver en qué commit se resolvió cada ítem, el estado de `TODO.md` en cualquier commit refleja exactamente qué estaba terminado en ese momento, y el TODO.md actúa como índice del log de git.
+**Por qué:** cada user story queda trazable en el historial del repo — cualquiera puede ver en qué commit se implementó cada historia, el estado del `TODO.md` en cualquier punto refleja exactamente qué estaba terminado, y el TODO actúa como índice del log de git.
 
 **Excepciones:**
-- Si una tarea requiere varios commits (ej. "Configurar CI" = setup + ajustes), está bien — todos referencian la misma tarea en su mensaje.
-- Si el usuario pide explícitamente no pushear todavía (trabajo en progreso, rama experimental), respetar eso y avisar que el push queda pendiente.
-- Cambios que NO corresponden a ninguna tarea del TODO (fixes menores, typos) se commitean normal, sin la referencia `(TODO: ...)`.
+- Si una tarea requiere varios commits (ej. "Configurar CI" = setup + ajustes), está bien — todos referencian la misma tarea.
+- Si el usuario pide explícitamente no pushear todavía (rama experimental, trabajo en progreso), respetar y avisar que el push queda pendiente.
+- Cambios que no corresponden a ninguna tarea (fixes menores, typos) se commitean normal, sin referencia `(TODO: ...)`.
 
 ## Próximas decisiones pendientes
 
